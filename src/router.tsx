@@ -1,5 +1,4 @@
 import { createBrowserRouter } from 'react-router-dom';
-import { getCargoById, getCargos } from './api/cargos.api';
 import { CargoEdit } from './pages/cargos/CargoEdit';
 import { Cargos } from './pages/cargos/Cargos';
 import { GenericError } from './pages/errors/GenericError';
@@ -18,13 +17,11 @@ export const router = createBrowserRouter([
       },
       {
         path: 'cargos',
-        element: <Cargos />,
-        loader: getCargos
+        element: <Cargos />
       },
       {
         path: 'cargos/:id',
-        element: <CargoEdit />,
-        loader: getCargoById
+        element: <CargoEdit />
       }
     ]
   }

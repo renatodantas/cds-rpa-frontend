@@ -3,7 +3,7 @@ import { Link, Outlet } from 'react-router-dom';
 import './Layout.css';
 
 export const LayoutApp = (): JSX.Element => {
-  const { Header, Content, Footer } = Layout;
+  const { Header, Content } = Layout;
   return (
     <Layout>
       <Header>

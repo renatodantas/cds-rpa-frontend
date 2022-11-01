@@ -6,10 +6,17 @@ export interface Pagination<T> {
   total: number;
 }
 
+export interface PageParams {
+  page?: string;
+  size?: string;
+  sort?: string;
+  order?: string;
+}
+
 export const DEFAULT_PAGINATION: Pagination<any> = {
   items: [],
   page: 0,
   pageSize: 0,
   pageCount: 0,
   total: 0
-}
+};

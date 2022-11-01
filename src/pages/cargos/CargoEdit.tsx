@@ -1,21 +1,35 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button, Col, Divider, Form, Input, message, Row, Space } from 'antd';
 import { AxiosError } from 'axios';
-import { Link, useLoaderData, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { saveNewCargo, updateCargo } from '../../api/cargos.api';
-import { Cargo } from '../../models/cargo';
+import { Cargo, CARGO_DEFAULT_VALUE } from '../../models/cargo';
 
 export const CargoEdit = () => {
-  const cargoSelecionado = useLoaderData() as Cargo;
   const navigate = useNavigate();
   const { id } = useParams();
+  const cargoSelecionado = CARGO_DEFAULT_VALUE;
+
+  const queryClient = useQueryClient();
+  const onSucessMutation = () =>
+    queryClient.invalidateQueries({ queryKey: ['cargos'] });
+  const newCargoMutation = useMutation({
+    mutationFn: saveNewCargo,
+    onSuccess: onSucessMutation
+  });
+  const updateCargoMutation = useMutation({
+    mutationFn: updateCargo,
+    onSuccess: onSucessMutation
+  });
 
   const onFinish = async (values: Cargo) => {
     try {
       if (id === 'new') {
-        await saveNewCargo(values);
+        //await saveNewCargo(values);
+        await newCargoMutation.mutateAsync(values);
         message.info('Cargo salvo com sucesso');
       } else {
-        await updateCargo(values);
+        await updateCargoMutation.mutateAsync(values);
         message.info('Cargo atualizado com sucesso');
       }
       navigate('/cargos');

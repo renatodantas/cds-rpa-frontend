@@ -1,14 +1,14 @@
 import { LoaderFunctionArgs } from 'react-router-dom';
 import { Cargo, CARGO_DEFAULT_VALUE, UnsavedCargo } from '../models/cargo';
-import { Pagination } from '../models/pagination';
+import { PageParams, Pagination } from '../models/pagination';
 import { httpClient } from '../utils/http-client';
 
 // ---------------------------------------------------------
 
 const API = '/cargos';
 
-export const getCargos = async ({ request }: LoaderFunctionArgs) => {
-  const response = await httpClient.get<Pagination<Cargo>>(API);
+export const getCargos = async (params: PageParams) => {
+  const response = await httpClient.get<Pagination<Cargo>>(API, { params });
   return response.data;
 };
 

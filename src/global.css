@@ -3,3 +3,12 @@ body,
   height: 100vh;
   overflow: auto;
 }
+
+.cursor-pointer:hover {
+  cursor: pointer;
+}
+
+.table-actions-column {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
