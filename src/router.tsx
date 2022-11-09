@@ -4,6 +4,7 @@ import { Cargos } from './pages/cargos/Cargos';
 import { GenericError } from './pages/errors/GenericError';
 import { Home } from './pages/Home';
 import { LayoutApp } from './pages/Layout';
+import { Login } from './pages/Login';
 
 export const router = createBrowserRouter([
   {
@@ -14,6 +15,10 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: <Home />
+      },
+      {
+        path: 'login',
+        element: <Login />
       },
       {
         path: 'cargos',

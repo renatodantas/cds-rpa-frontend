@@ -1,5 +1,4 @@
 import { Route, Routes } from 'react-router-dom';
-import { getCargos } from './api/cargos.api';
 import { CargoEdit } from './pages/cargos/CargoEdit';
 import { Cargos } from './pages/cargos/Cargos';
 import { Home } from './pages/Home';
@@ -10,7 +9,7 @@ export const App = (): JSX.Element => {
     <Routes>
       <Route path="/" element={<LayoutApp />}>
         <Route index element={<Home />} />
-        <Route path="cargos" element={<Cargos />} loader={getCargos} />
+        <Route path="cargos" element={<Cargos />} />
         <Route path="cargos/:id" element={<CargoEdit />} />
       </Route>
     </Routes>

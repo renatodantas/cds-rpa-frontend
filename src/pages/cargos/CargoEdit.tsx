@@ -1,33 +1,53 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button, Col, Divider, Form, Input, message, Row, Space } from 'antd';
 import { AxiosError } from 'axios';
+import { useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { saveNewCargo, updateCargo } from '../../api/cargos.api';
-import { Cargo, CARGO_DEFAULT_VALUE } from '../../models/cargo';
+import {
+  CargosQueries,
+  getCargoById,
+  saveNewCargo,
+  updateCargo
+} from '../../api/cargos.api';
+import { Cargo } from '../../models/cargo';
 
 export const CargoEdit = () => {
   const navigate = useNavigate();
+  const query = useQueryClient();
+  const [form] = Form.useForm<Cargo>();
   const { id } = useParams();
-  const cargoSelecionado = CARGO_DEFAULT_VALUE;
+  const { data, isFetching } = useQuery({
+    queryKey: [CargosQueries.GetById, id],
+    queryFn: () => getCargoById(id),
+    refetchOnMount: true
+  });
 
-  const queryClient = useQueryClient();
-  const onSucessMutation = () =>
-    queryClient.invalidateQueries({ queryKey: ['cargos'] });
+  useEffect(() => {
+    form.setFieldsValue({ ...data });
+  }, [data]);
+
+  const onSuccess = () =>
+    query.invalidateQueries({
+      queryKey: [CargosQueries.GetAll, CargosQueries.GetById]
+    });
   const newCargoMutation = useMutation({
     mutationFn: saveNewCargo,
-    onSuccess: onSucessMutation
+    onSuccess
   });
+
   const updateCargoMutation = useMutation({
-    mutationFn: updateCargo,
-    onSuccess: onSucessMutation
+    mutationFn: (values: Cargo) => updateCargo(id, values),
+    onSuccess
   });
+
+  const isProcessingUpdate =
+    newCargoMutation.isLoading || updateCargoMutation.isLoading;
 
   const onFinish = async (values: Cargo) => {
     try {
       if (id === 'new') {
-        //await saveNewCargo(values);
         await newCargoMutation.mutateAsync(values);
-        message.info('Cargo salvo com sucesso');
+        message.info('Cargo criado com sucesso');
       } else {
         await updateCargoMutation.mutateAsync(values);
         message.info('Cargo atualizado com sucesso');
@@ -49,9 +69,11 @@ export const CargoEdit = () => {
         <h1>Editar Cargo</h1>
 
         <Form
+          form={form}
+          disabled={isFetching || isProcessingUpdate}
           name="editCargoForm"
           layout="vertical"
-          initialValues={cargoSelecionado}
+          initialValues={data}
           validateMessages={{ required: '${label} é obrigatório' }}
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}

@@ -1,18 +1,13 @@
 import { Layout } from 'antd';
-import { Link, Outlet } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
+import { Navbar } from '../lib/Navbar';
 import './Layout.css';
 
 export const LayoutApp = (): JSX.Element => {
-  const { Header, Content } = Layout;
+  const { Content } = Layout;
   return (
     <Layout>
-      <Header>
-        RPA
-        <Link to="/">Home</Link>
-        {' - '}
-        <Link to="/cargos">Cargos</Link>
-        {' - '}
-      </Header>
+      <Navbar />
       <Content>
         <Outlet />
       </Content>

@@ -1,15 +1,14 @@
-
 export interface Cargo {
   id: number;
   nome: string;
-  centroCustoCodigo: string;
-  centroCustoDescricao: string;
+  codigoCentroCusto: string;
+  descricaoCentroCusto: string;
 }
 
-export type UnsavedCargo = Omit<Cargo, 'id'>
+export type UnsavedCargo = Omit<Cargo, 'id'>;
 
-export const CARGO_DEFAULT_VALUE: UnsavedCargo = {
+export const CARGO_DEFAULT_VALUE = Object.freeze<UnsavedCargo>({
   nome: '',
-  centroCustoCodigo: '',
-  centroCustoDescricao: ''
-}
+  codigoCentroCusto: '',
+  descricaoCentroCusto: ''
+});
