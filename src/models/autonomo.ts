@@ -1,5 +1,3 @@
-import type { Contrato } from "./contrato";
-
 export interface Autonomo {
   id: number;
   nome: string;
@@ -9,17 +7,14 @@ export interface Autonomo {
   conta: string;
   operacao?: string;
   pix?: string;
-  contratos: Contrato[];
 }
 
-export type UnsavedAutonomo = Omit<Autonomo, 'id'>
+export type UnsavedAutonomo = Omit<Autonomo, 'id'>;
 
-
-export const AUTONOMO_DEFAULT_VALUE: UnsavedAutonomo = {
+export const AUTONOMO_DEFAULT_VALUE: UnsavedAutonomo = Object.freeze({
   nome: '',
   cpf: '',
   banco: '',
   agencia: 0,
-  conta: '',
-  contratos: []
-}
+  conta: ''
+});

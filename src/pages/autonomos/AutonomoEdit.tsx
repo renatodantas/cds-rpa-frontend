@@ -21,7 +21,7 @@ import {
 } from '../../api/cargos.api';
 import { Cargo } from '../../models/cargo';
 
-export const CargoEdit = () => {
+export const AutonomoEdit = () => {
   const navigate = useNavigate();
   const query = useQueryClient();
   const [form] = Form.useForm<Cargo>();
@@ -77,7 +77,7 @@ export const CargoEdit = () => {
     <Row>
       <Col span={8} offset={8}>
         <Typography.Title level={4}>
-          {id === 'new' ? 'Editar' : 'Criar novo'} cargo
+          {id === 'new' ? 'Editar' : 'Criar novo'} autônomo
         </Typography.Title>
 
         <Form
