@@ -10,8 +10,8 @@ export const Navbar = (): JSX.Element => {
       <Space direction="horizontal" size="large">
         <img src={logo} className={style.logo} />
         <Link to="/">Home</Link>
-        <Link to="/cargos">Cargos</Link>
         <Link to="/autonomos">Autônomos</Link>
+        <Link to="/cargos">Cargos</Link>
       </Space>
     </Header>
   );

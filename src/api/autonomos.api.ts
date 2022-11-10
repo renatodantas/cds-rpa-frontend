@@ -37,7 +37,7 @@ export const saveNewAutonomo = async (item: UnsavedAutonomo): Promise<void> => {
 
 export const updateAutonomo = async (
   id: unknown,
-  item: Autonomo
+  item: UnsavedAutonomo
 ): Promise<void> => {
   await httpClient.put(`${API}/${id}`, item);
 };

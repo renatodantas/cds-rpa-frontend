@@ -46,6 +46,7 @@ export const Cargos = () => {
           <Button type="primary" size="small" icon={<PlusOutlined />} />
         </Link>
       </Space>
+
       <Table
         bordered
         loading={isFetching}

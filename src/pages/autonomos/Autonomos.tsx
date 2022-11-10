@@ -11,8 +11,13 @@ import {
 } from 'antd';
 import Column from 'antd/lib/table/Column';
 import { Link, useSearchParams } from 'react-router-dom';
-import { CargosQueries, getCargos, removeCargo } from '../../api/cargos.api';
-import { Cargo } from '../../models/cargo';
+import {
+  AutonomosQueries,
+  getAutonomos,
+  removeAutonomo
+} from '../../api/autonomos.api';
+import { Autonomo } from '../../models/autonomo';
+import { maskCpf } from '../../utils/masks';
 
 export const Autonomos = () => {
   const [searchParams] = useSearchParams();
@@ -21,53 +26,54 @@ export const Autonomos = () => {
   const { Text } = Typography;
 
   const { isFetching, data } = useQuery({
-    queryKey: [CargosQueries.GetAll],
-    queryFn: () => getCargos(params)
+    queryKey: [AutonomosQueries.GetAll],
+    queryFn: () => getAutonomos(params)
   });
 
-  const removeCargoMutation = useMutation({
-    mutationFn: (id: number) => removeCargo(id),
+  const removeAutonomoMutation = useMutation({
+    mutationFn: (id: number) => removeAutonomo(id),
     onSuccess: () => {
-      message.info('Cargo excluído com sucesso');
+      message.info('Autônomo excluído com sucesso');
       query.invalidateQueries({
-        queryKey: [CargosQueries.GetAll]
+        queryKey: [AutonomosQueries.GetAll]
       });
     }
   });
 
-  const handleRemoveCargo = (id: number) => removeCargoMutation.mutateAsync(id);
-  const isDeleting = removeCargoMutation.isLoading;
+  const handleRemoveAutonomo = (id: number) =>
+    removeAutonomoMutation.mutateAsync(id);
+  const isDeleting = removeAutonomoMutation.isLoading;
 
   return (
     <>
       <Space direction="horizontal" size="large" align="start">
         <Typography.Title level={4}>Autônomos</Typography.Title>
-        <Link to="/cargos/new">
+        <Link to="/autonomos/new">
           <Button type="primary" size="small" icon={<PlusOutlined />} />
         </Link>
       </Space>
+
       <Table
         bordered
         loading={isFetching}
         dataSource={data?.items}
         rowKey="id"
-        locale={{ emptyText: <Empty description="Nenhum cargo cadastrado" /> }}
+        locale={{
+          emptyText: <Empty description="Nenhum autônomo cadastrado" />
+        }}
       >
-        <Column<Cargo>
+        <Column<Autonomo>
           title="Nome"
           dataIndex="nome"
-          render={(text, item) => <Link to={`/cargos/${item.id}`}>{text}</Link>}
+          render={(text, { id }) => <Link to={`/autonomos/${id}`}>{text}</Link>}
         />
-        <Column<Cargo>
-          title="Centro Custo"
+        <Column<Autonomo>
+          title="CPF"
+          dataIndex="cpf"
           width="400px"
-          render={(_, item) => (
-            <span>
-              {item.codigoCentroCusto + ' - ' + item.descricaoCentroCusto}
-            </span>
-          )}
+          render={(text) => <>{maskCpf(text)}</>}
         />
-        <Column<Cargo>
+        <Column<Autonomo>
           dataIndex="actions"
           className="table-actions-column"
           width="200px"
@@ -82,7 +88,7 @@ export const Autonomos = () => {
                       Confirma a exclusão de <Text strong>{item.nome}</Text>?
                     </Text>
                   }
-                  onConfirm={() => handleRemoveCargo(item.id)}
+                  onConfirm={() => handleRemoveAutonomo(item.id)}
                   okButtonProps={{ loading: isDeleting }}
                   okText="Sim"
                   cancelText="Não"

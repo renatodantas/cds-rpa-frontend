@@ -19,12 +19,12 @@ import {
   saveNewCargo,
   updateCargo
 } from '../../api/cargos.api';
-import { Cargo } from '../../models/cargo';
+import { UnsavedCargo } from '../../models/cargo';
 
 export const CargoEdit = () => {
   const navigate = useNavigate();
   const query = useQueryClient();
-  const [form] = Form.useForm<Cargo>();
+  const [form] = Form.useForm<UnsavedCargo>();
   const { id } = useParams();
   const { data, isFetching } = useQuery({
     queryKey: [CargosQueries.GetById, id],
@@ -46,14 +46,14 @@ export const CargoEdit = () => {
   });
 
   const updateCargoMutation = useMutation({
-    mutationFn: (values: Cargo) => updateCargo(id, values),
+    mutationFn: (values: UnsavedCargo) => updateCargo(id, values),
     onSuccess
   });
 
   const isProcessingUpdate =
     newCargoMutation.isLoading || updateCargoMutation.isLoading;
 
-  const onFinish = async (values: Cargo) => {
+  const onFinish = async (values: UnsavedCargo) => {
     try {
       if (id === 'new') {
         await newCargoMutation.mutateAsync(values);

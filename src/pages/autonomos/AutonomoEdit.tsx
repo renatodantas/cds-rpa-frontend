@@ -7,28 +7,27 @@ import {
   Input,
   message,
   Row,
-  Space,
   Typography
 } from 'antd';
 import { AxiosError } from 'axios';
 import { useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
-  CargosQueries,
-  getCargoById,
-  saveNewCargo,
-  updateCargo
-} from '../../api/cargos.api';
-import { Cargo } from '../../models/cargo';
+  AutonomosQueries,
+  getAutonomoById,
+  saveNewAutonomo,
+  updateAutonomo
+} from '../../api/autonomos.api';
+import { UnsavedAutonomo } from '../../models/autonomo';
 
 export const AutonomoEdit = () => {
   const navigate = useNavigate();
   const query = useQueryClient();
-  const [form] = Form.useForm<Cargo>();
+  const [form] = Form.useForm<UnsavedAutonomo>();
   const { id } = useParams();
   const { data, isFetching } = useQuery({
-    queryKey: [CargosQueries.GetById, id],
-    queryFn: () => getCargoById(id),
+    queryKey: [AutonomosQueries.GetById, id],
+    queryFn: () => getAutonomoById(id),
     refetchOnMount: true
   });
 
@@ -38,44 +37,40 @@ export const AutonomoEdit = () => {
 
   const onSuccess = () =>
     query.invalidateQueries({
-      queryKey: [CargosQueries.GetAll, CargosQueries.GetById]
+      queryKey: [AutonomosQueries.GetAll, AutonomosQueries.GetById]
     });
-  const newCargoMutation = useMutation({
-    mutationFn: saveNewCargo,
+  const newAutonomoMutation = useMutation({
+    mutationFn: saveNewAutonomo,
     onSuccess
   });
 
-  const updateCargoMutation = useMutation({
-    mutationFn: (values: Cargo) => updateCargo(id, values),
+  const updateAutonomoMutation = useMutation({
+    mutationFn: (values: UnsavedAutonomo) => updateAutonomo(id, values),
     onSuccess
   });
 
   const isProcessingUpdate =
-    newCargoMutation.isLoading || updateCargoMutation.isLoading;
+    newAutonomoMutation.isLoading || updateAutonomoMutation.isLoading;
 
-  const onFinish = async (values: Cargo) => {
+  const onFinish = async (values: UnsavedAutonomo) => {
     try {
       if (id === 'new') {
-        await newCargoMutation.mutateAsync(values);
-        message.info('Cargo criado com sucesso');
+        await newAutonomoMutation.mutateAsync(values);
+        message.info('Autônomo criado com sucesso');
       } else {
-        await updateCargoMutation.mutateAsync(values);
-        message.info('Cargo atualizado com sucesso');
+        await updateAutonomoMutation.mutateAsync(values);
+        message.info('Autônomo atualizado com sucesso');
       }
-      navigate('/cargos');
+      navigate('/autonomos');
     } catch (error) {
       const err = error as AxiosError;
-      message.error(`Erro ao salvar cargo: ${err.response?.data}`);
+      message.error(`Erro ao salvar autônomo: ${err.response?.data}`);
     }
-  };
-
-  const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo);
   };
 
   return (
     <Row>
-      <Col span={8} offset={8}>
+      <Col span={14} offset={5}>
         <Typography.Title level={4}>
           {id === 'new' ? 'Editar' : 'Criar novo'} autônomo
         </Typography.Title>
@@ -83,41 +78,64 @@ export const AutonomoEdit = () => {
         <Form
           form={form}
           disabled={isFetching || isProcessingUpdate}
-          name="editCargoForm"
-          layout="vertical"
           initialValues={data}
-          validateMessages={{ required: '${label} é obrigatório' }}
+          className="autonomo-edit-form"
           onFinish={onFinish}
-          onFinishFailed={onFinishFailed}
           autoComplete="off"
+          layout="vertical"
         >
-          <Form.Item label="Nome" name="nome" rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
+          <Row gutter={24}>
+            <Col span={18}>
+              <Form.Item label="Nome" name="nome" rules={[{ required: true }]}>
+                <Input placeholder="Nome" />
+              </Form.Item>
+            </Col>
+            <Col span={6}>
+              <Form.Item
+                label="CPF"
+                name="cpf"
+                rules={[{ required: true, len: 11 }]}
+              >
+                <Input placeholder="CPF" />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item label="Banco" name="banco">
+                <Input placeholder="Nome do banco" />
+              </Form.Item>
+            </Col>
+            <Col span={6}>
+              <Form.Item label="Agência" name="agencia">
+                <Input placeholder="Agência" />
+              </Form.Item>
+            </Col>
+            <Col span={6}>
+              <Form.Item label="Conta" name="conta">
+                <Input placeholder="C/C" />
+              </Form.Item>
+            </Col>
+            <Col span={6}>
+              <Form.Item label="Operação" name="operacao">
+                <Input placeholder="Op." />
+              </Form.Item>
+            </Col>
+            <Col span={18}>
+              <Form.Item label="PIX" name="pix">
+                <Input placeholder="Código do PIX (CPF, celular, email ou chave)" />
+              </Form.Item>
+            </Col>
+          </Row>
 
-          <Space direction="vertical" />
+          <Divider style={{ marginTop: '0' }} />
 
-          <Form.Item label="Centro de Custo" name="codigoCentroCusto">
-            <Input placeholder="Código do centro de custo" />
-          </Form.Item>
-
-          <Space direction="vertical" />
-
-          <Form.Item
-            label="Descrição do centro de custo"
-            name="descricaoCentroCusto"
-          >
-            <Input placeholder="Descrição do centro de custo" />
-          </Form.Item>
-
-          <Divider />
-
-          <Space size="middle">
+          <Form.Item>
             <Button type="primary" htmlType="submit">
               Salvar
             </Button>
-            <Link to="/cargos">Voltar</Link>
-          </Space>
+            <Link to="/autonomos" style={{ marginLeft: 20 }}>
+              Voltar
+            </Link>
+          </Form.Item>
         </Form>
       </Col>
     </Row>

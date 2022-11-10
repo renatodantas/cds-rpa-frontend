@@ -31,7 +31,10 @@ export const saveNewCargo = async (item: UnsavedCargo): Promise<void> => {
   await httpClient.post(API, item);
 };
 
-export const updateCargo = async (id: unknown, item: Cargo): Promise<void> => {
+export const updateCargo = async (
+  id: unknown,
+  item: UnsavedCargo
+): Promise<void> => {
   await httpClient.put(`${API}/${id}`, item);
 };
 
