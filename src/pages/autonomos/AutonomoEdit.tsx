@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import {
   Button,
   Col,
@@ -22,7 +22,6 @@ import { UnsavedAutonomo } from '../../models/autonomo';
 
 export const AutonomoEdit = () => {
   const navigate = useNavigate();
-  const query = useQueryClient();
   const [form] = Form.useForm<UnsavedAutonomo>();
   const { id } = useParams();
   const { data, isFetching } = useQuery({
@@ -35,18 +34,12 @@ export const AutonomoEdit = () => {
     form.setFieldsValue({ ...data });
   }, [data]);
 
-  const onSuccess = () =>
-    query.invalidateQueries({
-      queryKey: [AutonomosQueries.GetAll, AutonomosQueries.GetById]
-    });
   const newAutonomoMutation = useMutation({
-    mutationFn: saveNewAutonomo,
-    onSuccess
+    mutationFn: saveNewAutonomo
   });
 
   const updateAutonomoMutation = useMutation({
-    mutationFn: (values: UnsavedAutonomo) => updateAutonomo(id, values),
-    onSuccess
+    mutationFn: (values: UnsavedAutonomo) => updateAutonomo(id, values)
   });
 
   const isProcessingUpdate =

@@ -1,17 +1,18 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import {
   Button,
   Col,
   Divider,
   Form,
   Input,
+  InputRef,
   message,
   Row,
   Space,
   Typography
 } from 'antd';
 import { AxiosError } from 'axios';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   CargosQueries,
@@ -23,31 +24,27 @@ import { UnsavedCargo } from '../../models/cargo';
 
 export const CargoEdit = () => {
   const navigate = useNavigate();
-  const query = useQueryClient();
   const [form] = Form.useForm<UnsavedCargo>();
+  const focusRef = useRef<InputRef>(null);
   const { id } = useParams();
   const { data, isFetching } = useQuery({
     queryKey: [CargosQueries.GetById, id],
-    queryFn: () => getCargoById(id),
-    refetchOnMount: true
+    queryFn: () => getCargoById(id)
   });
 
+  useEffect(() => {
+    focusRef.current?.focus();
+  });
   useEffect(() => {
     form.setFieldsValue({ ...data });
   }, [data]);
 
-  const onSuccess = () =>
-    query.invalidateQueries({
-      queryKey: [CargosQueries.GetAll, CargosQueries.GetById]
-    });
   const newCargoMutation = useMutation({
-    mutationFn: saveNewCargo,
-    onSuccess
+    mutationFn: saveNewCargo
   });
 
   const updateCargoMutation = useMutation({
-    mutationFn: (values: UnsavedCargo) => updateCargo(id, values),
-    onSuccess
+    mutationFn: (values: UnsavedCargo) => updateCargo(id, values)
   });
 
   const isProcessingUpdate =
@@ -69,10 +66,6 @@ export const CargoEdit = () => {
     }
   };
 
-  const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo);
-  };
-
   return (
     <Row>
       <Col span={8} offset={8}>
@@ -88,11 +81,10 @@ export const CargoEdit = () => {
           initialValues={data}
           validateMessages={{ required: '${label} é obrigatório' }}
           onFinish={onFinish}
-          onFinishFailed={onFinishFailed}
           autoComplete="off"
         >
           <Form.Item label="Nome" name="nome" rules={[{ required: true }]}>
-            <Input />
+            <Input ref={focusRef} />
           </Form.Item>
 
           <Space direction="vertical" />

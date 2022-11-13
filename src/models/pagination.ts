@@ -5,18 +5,10 @@ export interface Pagination<T> {
   pageCount: number;
   total: number;
 }
-
-export interface PageParams {
-  page?: string;
-  size?: string;
-  sort?: string;
-  order?: string;
-}
-
-export const DEFAULT_PAGINATION: Pagination<any> = {
+export const DEFAULT_PAGINATION: Pagination<unknown> = {
   items: [],
   page: 0,
-  pageSize: 0,
+  pageSize: 10,
   pageCount: 0,
   total: 0
 };

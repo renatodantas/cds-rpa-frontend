@@ -10,19 +10,25 @@ import {
   Typography
 } from 'antd';
 import Column from 'antd/lib/table/Column';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { CargosQueries, getCargos, removeCargo } from '../../api/cargos.api';
 import { Cargo } from '../../models/cargo';
+import { DEFAULT_PAGE_PARAMS, PageParams } from '../../models/page-params';
 
 export const Cargos = () => {
-  const [searchParams] = useSearchParams();
-  const query = useQueryClient();
-  const params = Object.fromEntries(searchParams);
+  // const [searchParams] = useSearchParams();
+  // const params = Object.fromEntries(searchParams);
+  const [pageParams, setPageParams] = useState<PageParams<Cargo>>({
+    ...DEFAULT_PAGE_PARAMS,
+    sort: 'nome'
+  });
   const { Text } = Typography;
+  const query = useQueryClient();
 
   const { isFetching, data } = useQuery({
     queryKey: [CargosQueries.GetAll],
-    queryFn: () => getCargos(params)
+    queryFn: () => getCargos(pageParams)
   });
 
   const removeCargoMutation = useMutation({
@@ -50,7 +56,7 @@ export const Cargos = () => {
       <Table
         bordered
         loading={isFetching}
-        dataSource={data?.items}
+        dataSource={data?.data || []}
         rowKey="id"
         locale={{ emptyText: <Empty description="Nenhum cargo cadastrado" /> }}
       >
