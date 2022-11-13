@@ -11,6 +11,7 @@
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
     "@loadable/component": "^5.15.2",
+    "@supabase/supabase-js": "^2.1.0",
     "@tanstack/react-query": "^4.14.5",
     "antd": "^4.24.1",
     "axios": "^1.1.3",
