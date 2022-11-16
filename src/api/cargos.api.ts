@@ -1,35 +1,22 @@
 import { Cargo, CARGO_DEFAULT_VALUE, UnsavedCargo } from '../models/cargo';
 import {
-  DEFAULT_ORDER,
-  DEFAULT_PAGE,
-  DEFAULT_SIZE,
   getPaginationRange as getPageRange,
   PageParams
 } from '../models/page-params';
 import { supabase } from '../utils/supabase';
 
-/**
- * Nome dos caches das consultas; usadas para invalidação.
- */
-export enum CargosQueries {
-  GetAll = 'Cargos-GetAll',
-  GetById = 'Cargos-GetById',
-  Update = 'Cargos-Update',
-  Delete = 'Cargos-Delete'
-}
-
 export async function getCargos({
-  page = DEFAULT_PAGE,
-  size = DEFAULT_SIZE,
-  ascending = DEFAULT_ORDER,
-  sort = 'nome'
+  page,
+  size,
+  ascending,
+  sort
 }: PageParams<Cargo>) {
   const { from, to } = getPageRange(page, size);
-  console.log('Fetching cargos...');
+  console.log('Fetching:', page, size, sort, ascending);
   return supabase
     .from('Cargos')
     .select('*')
-    .order(sort, { ascending })
+    .order(sort!, { ascending })
     .range(from, to);
 }
 
@@ -40,7 +27,7 @@ export async function getCargoById(id: unknown): Promise<UnsavedCargo> {
   return item.data || CARGO_DEFAULT_VALUE;
 }
 
-export async function saveNewCargo(item: UnsavedCargo) {
+export async function createCargo(item: UnsavedCargo) {
   return supabase.from('Cargos').insert(item);
 }
 

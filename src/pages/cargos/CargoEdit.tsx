@@ -1,4 +1,3 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
 import {
   Button,
   Col,
@@ -11,58 +10,39 @@ import {
   Space,
   Typography
 } from 'antd';
-import { AxiosError } from 'axios';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import {
-  CargosQueries,
-  getCargoById,
-  saveNewCargo,
-  updateCargo
-} from '../../api/cargos.api';
-import { UnsavedCargo } from '../../models/cargo';
+import { createCargo, getCargoById, updateCargo } from '../../api/cargos.api';
+import { CARGO_DEFAULT_VALUE, UnsavedCargo } from '../../models/cargo';
 
 export const CargoEdit = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm<UnsavedCargo>();
   const focusRef = useRef<InputRef>(null);
   const { id } = useParams();
-  const { data, isFetching } = useQuery({
-    queryKey: [CargosQueries.GetById, id],
-    queryFn: () => getCargoById(id)
-  });
+  const [cargo, setCargo] = useState<UnsavedCargo>(CARGO_DEFAULT_VALUE);
 
   useEffect(() => {
     focusRef.current?.focus();
-  });
+    getCargoById(id).then((res) => setCargo(res));
+  }, []);
+
   useEffect(() => {
-    form.setFieldsValue({ ...data });
-  }, [data]);
-
-  const newCargoMutation = useMutation({
-    mutationFn: saveNewCargo
-  });
-
-  const updateCargoMutation = useMutation({
-    mutationFn: (values: UnsavedCargo) => updateCargo(id, values)
-  });
-
-  const isProcessingUpdate =
-    newCargoMutation.isLoading || updateCargoMutation.isLoading;
+    form.setFieldsValue({ ...cargo });
+  }, [cargo]);
 
   const onFinish = async (values: UnsavedCargo) => {
     try {
       if (id === 'new') {
-        await newCargoMutation.mutateAsync(values);
+        await createCargo(values);
         message.info('Cargo criado com sucesso');
       } else {
-        await updateCargoMutation.mutateAsync(values);
+        await updateCargo(id, cargo);
         message.info('Cargo atualizado com sucesso');
       }
       navigate('/cargos');
-    } catch (error) {
-      const err = error as AxiosError;
-      message.error(`Erro ao salvar cargo: ${err.response?.data}`);
+    } catch (error: any) {
+      message.error(`Erro ao salvar cargo: ${error}`);
     }
   };
 
@@ -75,10 +55,9 @@ export const CargoEdit = () => {
 
         <Form
           form={form}
-          disabled={isFetching || isProcessingUpdate}
           name="editCargoForm"
           layout="vertical"
-          initialValues={data}
+          initialValues={cargo}
           validateMessages={{ required: '${label} é obrigatório' }}
           onFinish={onFinish}
           autoComplete="off"

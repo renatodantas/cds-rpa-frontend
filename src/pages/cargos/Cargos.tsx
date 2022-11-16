@@ -1,5 +1,4 @@
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Button,
   Empty,
@@ -7,42 +6,46 @@ import {
   Popconfirm,
   Space,
   Table,
+  TableProps,
   Typography
 } from 'antd';
 import Column from 'antd/lib/table/Column';
-import { useState } from 'react';
+import { SorterResult } from 'antd/lib/table/interface';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { CargosQueries, getCargos, removeCargo } from '../../api/cargos.api';
+import { getCargos, removeCargo } from '../../api/cargos.api';
 import { Cargo } from '../../models/cargo';
 import { DEFAULT_PAGE_PARAMS, PageParams } from '../../models/page-params';
+import { DEFAULT_PAGINATION, Pagination } from '../../models/pagination';
 
 export const Cargos = () => {
-  // const [searchParams] = useSearchParams();
-  // const params = Object.fromEntries(searchParams);
+  const [cargos, setCargos] = useState<Pagination<Cargo>>(DEFAULT_PAGINATION);
   const [pageParams, setPageParams] = useState<PageParams<Cargo>>({
     ...DEFAULT_PAGE_PARAMS,
     sort: 'nome'
   });
-  const { Text } = Typography;
-  const query = useQueryClient();
 
-  const { isFetching, data } = useQuery({
-    queryKey: [CargosQueries.GetAll],
-    queryFn: () => getCargos(pageParams)
-  });
+  useEffect(() => {
+    getCargos(pageParams).then((res) =>
+      setCargos({
+        items: res.data!,
+        total: res.count!
+      })
+    );
+  }, [pageParams]);
 
-  const removeCargoMutation = useMutation({
-    mutationFn: (id: number) => removeCargo(id),
-    onSuccess: () => {
-      message.info('Cargo excluído com sucesso');
-      query.invalidateQueries({
-        queryKey: [CargosQueries.GetAll]
-      });
-    }
-  });
+  const handleChange: TableProps<Cargo>['onChange'] = (_, __, sorter) => {
+    const { field, order } = sorter as SorterResult<Cargo>;
+    const sort = field as keyof Cargo;
+    const ascending = order === 'ascend';
+    setPageParams({ ...pageParams, sort, ascending });
+    console.log(pageParams);
+  };
 
-  const handleRemoveCargo = (id: number) => removeCargoMutation.mutateAsync(id);
-  const isDeleting = removeCargoMutation.isLoading;
+  const handleRemoveCargo = (id: number) => {
+    removeCargo(id);
+    message.info('Cargo excluído com sucesso');
+  };
 
   return (
     <>
@@ -53,19 +56,27 @@ export const Cargos = () => {
         </Link>
       </Space>
 
-      <Table
-        bordered
-        loading={isFetching}
-        dataSource={data?.data || []}
+      <Table<Cargo>
         rowKey="id"
+        bordered
+        dataSource={cargos.items}
         locale={{ emptyText: <Empty description="Nenhum cargo cadastrado" /> }}
+        onChange={handleChange}
+        sortDirections={['ascend', 'descend']}
+        pagination={{
+          position: ['bottomCenter'],
+          current: pageParams.page,
+          pageSize: pageParams.size
+        }}
       >
         <Column<Cargo>
+          sorter
           title="Nome"
           dataIndex="nome"
           render={(text, item) => <Link to={`/cargos/${item.id}`}>{text}</Link>}
         />
         <Column<Cargo>
+          sorter
           title="Centro Custo"
           width="400px"
           render={(_, item) => (
@@ -85,12 +96,12 @@ export const Cargos = () => {
                 <Popconfirm
                   placement="left"
                   title={
-                    <Text>
-                      Confirma a exclusão de <Text strong>{item.nome}</Text>?
-                    </Text>
+                    <Typography.Text>
+                      Confirma a exclusão de{' '}
+                      <Typography.Text strong>{item.nome}</Typography.Text>?
+                    </Typography.Text>
                   }
                   onConfirm={() => handleRemoveCargo(item.id)}
-                  okButtonProps={{ loading: isDeleting }}
                   okText="Sim"
                   cancelText="Não"
                 >

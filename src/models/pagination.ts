@@ -1,14 +1,14 @@
 export interface Pagination<T> {
   items: Array<T>;
-  page: number;
-  pageSize: number;
-  pageCount: number;
+  // page: number;
+  // pageSize: number;
+  // pageCount: number;
   total: number;
 }
-export const DEFAULT_PAGINATION: Pagination<unknown> = {
+export const DEFAULT_PAGINATION: Pagination<any> = {
   items: [],
-  page: 0,
-  pageSize: 10,
-  pageCount: 0,
+  // page: 0,
+  // pageSize: 10,
+  // pageCount: 0,
   total: 0
 };
