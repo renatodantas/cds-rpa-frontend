@@ -5,6 +5,8 @@ import {
 } from '../models/page-params';
 import { supabase } from '../utils/supabase';
 
+const TABLE_NAME = 'Cargos';
+
 export async function getCargos({
   page,
   size,
@@ -12,32 +14,34 @@ export async function getCargos({
   sort
 }: PageParams<Cargo>) {
   const { from, to } = getPageRange(page, size);
-  console.log('Fetching:', page, size, sort, ascending);
   return supabase
-    .from('Cargos')
+    .from(TABLE_NAME)
     .select('*')
     .order(sort!, { ascending })
     .range(from, to);
 }
 
 export async function getCargoById(id: unknown): Promise<UnsavedCargo> {
-  console.log('Fetching cargo ', id);
   if (id === 'new') return CARGO_DEFAULT_VALUE;
-  const item = await supabase.from('Cargos').select('*').match({ id }).single();
+  const item = await supabase
+    .from(TABLE_NAME)
+    .select('*')
+    .match({ id })
+    .single();
   return item.data || CARGO_DEFAULT_VALUE;
 }
 
 export async function createCargo(item: UnsavedCargo) {
-  return supabase.from('Cargos').insert(item);
+  return supabase.from(TABLE_NAME).insert(item);
 }
 
 export async function updateCargo(id: unknown, item: UnsavedCargo) {
   return supabase
-    .from('Cargos')
+    .from(TABLE_NAME)
     .update({ ...item })
     .eq('id', id);
 }
 
 export async function removeCargo(id: unknown) {
-  return supabase.from('Cargos').delete().eq('id', id);
+  return supabase.from(TABLE_NAME).delete().eq('id', id);
 }

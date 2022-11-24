@@ -1,5 +1,4 @@
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Button,
   Empty,
@@ -7,42 +6,52 @@ import {
   Popconfirm,
   Space,
   Table,
+  TableProps,
   Typography
 } from 'antd';
 import Column from 'antd/lib/table/Column';
-import { Link, useSearchParams } from 'react-router-dom';
-import {
-  AutonomosQueries,
-  getAutonomos,
-  removeAutonomo
-} from '../../api/autonomos.api';
+import { SorterResult } from 'antd/lib/table/interface';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { getAutonomos, removeAutonomo } from '../../api/autonomos.api';
 import { Autonomo } from '../../models/autonomo';
+import { DEFAULT_PAGE_PARAMS, PageParams } from '../../models/page-params';
+import { DEFAULT_PAGINATION, Pagination } from '../../models/pagination';
 import { maskCpf } from '../../utils/masks';
 
 export const Autonomos = () => {
-  const [searchParams] = useSearchParams();
-  const query = useQueryClient();
-  const params = Object.fromEntries(searchParams);
-  const { Text } = Typography;
-
-  const { isFetching, data } = useQuery({
-    queryKey: [AutonomosQueries.GetAll],
-    queryFn: () => getAutonomos(params)
+  const [autonomos, setAutonomos] =
+    useState<Pagination<Autonomo>>(DEFAULT_PAGINATION);
+  const [pageParams, setPageParams] = useState<PageParams<Autonomo>>({
+    ...DEFAULT_PAGE_PARAMS,
+    sort: 'nome'
   });
 
-  const removeAutonomoMutation = useMutation({
-    mutationFn: (id: number) => removeAutonomo(id),
-    onSuccess: () => {
-      message.info('Autônomo excluído com sucesso');
-      query.invalidateQueries({
-        queryKey: [AutonomosQueries.GetAll]
-      });
-    }
-  });
+  useEffect(() => {
+    fetchAutonomos();
+  }, [pageParams]);
 
-  const handleRemoveAutonomo = (id: number) =>
-    removeAutonomoMutation.mutateAsync(id);
-  const isDeleting = removeAutonomoMutation.isLoading;
+  const fetchAutonomos = async () => {
+    const res = await getAutonomos(pageParams);
+    setAutonomos({
+      items: res.data!,
+      total: res.count!
+    });
+  };
+
+  const handleChange: TableProps<Autonomo>['onChange'] = (_, __, sorter) => {
+    const { field, order } = sorter as SorterResult<Autonomo>;
+    console.log(sorter);
+    const sort = field as keyof Autonomo;
+    const ascending = order === 'ascend';
+    setPageParams({ ...pageParams, sort, ascending });
+  };
+
+  const handleRemoveAutonomo = async (id: number) => {
+    await removeAutonomo(id);
+    message.info('Autônomo excluído com sucesso');
+    fetchAutonomos();
+  };
 
   return (
     <>
@@ -53,25 +62,35 @@ export const Autonomos = () => {
         </Link>
       </Space>
 
-      <Table
-        bordered
-        loading={isFetching}
-        dataSource={data?.items}
+      <Table<Autonomo>
         rowKey="id"
+        bordered
+        dataSource={autonomos.items}
         locale={{
           emptyText: <Empty description="Nenhum autônomo cadastrado" />
         }}
+        onChange={handleChange}
+        sortDirections={['ascend', 'descend']}
+        pagination={{
+          position: ['bottomCenter'],
+          current: pageParams.page,
+          pageSize: pageParams.size
+        }}
       >
         <Column<Autonomo>
+          sorter
           title="Nome"
           dataIndex="nome"
-          render={(text, { id }) => <Link to={`/autonomos/${id}`}>{text}</Link>}
+          render={(text, item) => (
+            <Link to={`/autonomos/${item.id}`}>{text}</Link>
+          )}
         />
         <Column<Autonomo>
+          sorter
           title="CPF"
           dataIndex="cpf"
           width="400px"
-          render={(text) => <>{maskCpf(text)}</>}
+          render={(_, item) => <span>{maskCpf(item.cpf)}</span>}
         />
         <Column<Autonomo>
           dataIndex="actions"
@@ -84,12 +103,12 @@ export const Autonomos = () => {
                 <Popconfirm
                   placement="left"
                   title={
-                    <Text>
-                      Confirma a exclusão de <Text strong>{item.nome}</Text>?
-                    </Text>
+                    <Typography.Text>
+                      Confirma a exclusão de{' '}
+                      <Typography.Text strong>{item.nome}</Typography.Text>?
+                    </Typography.Text>
                   }
                   onConfirm={() => handleRemoveAutonomo(item.id)}
-                  okButtonProps={{ loading: isDeleting }}
                   okText="Sim"
                   cancelText="Não"
                 >

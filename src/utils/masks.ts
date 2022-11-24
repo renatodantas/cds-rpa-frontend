@@ -1,2 +1,3 @@
-export const maskCpf = (cpf: string): string =>
-  `${cpf.substring(0, 3)}.###.${cpf.substring(6, 9)}-##`;
+export function maskCpf(cpf: string): string {
+  return `${cpf.substring(0, 3)}.###.${cpf.substring(6, 9)}-##`;
+}

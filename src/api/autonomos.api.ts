@@ -3,45 +3,50 @@ import {
   AUTONOMO_DEFAULT_VALUE,
   UnsavedAutonomo
 } from '../models/autonomo';
-import { PageParams, Pagination } from '../models/pagination';
-import { httpClient } from '../utils/http-client';
+import {
+  getPaginationRange as getPageRange,
+  PageParams
+} from '../models/page-params';
+import { supabase } from '../utils/supabase';
 
-/**
- * Nome dos caches das consultas; usadas para invalidação.
- */
-export enum AutonomosQueries {
-  GetAll = 'Autonomos-GetAll',
-  GetById = 'Autonomos-GetById',
-  Update = 'Autonomos-Update',
-  Delete = 'Autonomos-Delete'
+const TABLE_NAME = 'Autonomos';
+
+export async function getAutonomos({
+  page,
+  size,
+  ascending,
+  sort
+}: PageParams<Autonomo>) {
+  const { from, to } = getPageRange(page, size);
+  return supabase
+    .from(TABLE_NAME)
+    .select('*')
+    .order(sort!, { ascending })
+    .range(from, to);
 }
 
-const API = '/autonomos';
+export async function getAutonomoById(id: unknown): Promise<UnsavedAutonomo> {
+  if (id === 'new') return AUTONOMO_DEFAULT_VALUE;
+  const item = await supabase
+    .from(TABLE_NAME)
+    .select('*')
+    .eq('id', id)
+    .single();
+  return item.data || AUTONOMO_DEFAULT_VALUE;
+}
 
-export const getAutonomos = async (
-  params: PageParams
-): Promise<Pagination<Autonomo>> => {
-  const response = await httpClient.get<Pagination<Autonomo>>(API, { params });
-  return response.data;
-};
+export async function createAutonomo(item: UnsavedAutonomo) {
+  return supabase.from(TABLE_NAME).insert(item);
+}
 
-export const getAutonomoById = async (id: unknown) => {
-  if (id === 'new') return { ...AUTONOMO_DEFAULT_VALUE };
-  const response = await httpClient.get<Autonomo>(`${API}/${id}`);
-  return response.data;
-};
+export async function updateAutonomo(id: unknown, item: UnsavedAutonomo) {
+  console.log('update:', item);
+  return supabase
+    .from(TABLE_NAME)
+    .update({ ...item })
+    .eq('id', id);
+}
 
-export const saveNewAutonomo = async (item: UnsavedAutonomo): Promise<void> => {
-  await httpClient.post(API, item);
-};
-
-export const updateAutonomo = async (
-  id: unknown,
-  item: UnsavedAutonomo
-): Promise<void> => {
-  await httpClient.put(`${API}/${id}`, item);
-};
-
-export const removeAutonomo = async (id: unknown): Promise<void> => {
-  await httpClient.delete(`${API}/${id}`);
-};
+export async function removeAutonomo(id: unknown) {
+  return supabase.from(TABLE_NAME).delete().eq('id', id);
+}

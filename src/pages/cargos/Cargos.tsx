@@ -26,25 +26,28 @@ export const Cargos = () => {
   });
 
   useEffect(() => {
-    getCargos(pageParams).then((res) =>
-      setCargos({
-        items: res.data!,
-        total: res.count!
-      })
-    );
+    fetchCargos();
   }, [pageParams]);
+
+  const fetchCargos = async () => {
+    const res = await getCargos(pageParams);
+    setCargos({
+      items: res.data!,
+      total: res.count!
+    });
+  };
 
   const handleChange: TableProps<Cargo>['onChange'] = (_, __, sorter) => {
     const { field, order } = sorter as SorterResult<Cargo>;
     const sort = field as keyof Cargo;
     const ascending = order === 'ascend';
     setPageParams({ ...pageParams, sort, ascending });
-    console.log(pageParams);
   };
 
-  const handleRemoveCargo = (id: number) => {
-    removeCargo(id);
+  const handleRemoveCargo = async (id: number) => {
+    await removeCargo(id);
     message.info('Cargo excluído com sucesso');
+    fetchCargos();
   };
 
   return (
@@ -78,10 +81,11 @@ export const Cargos = () => {
         <Column<Cargo>
           sorter
           title="Centro Custo"
+          dataIndex="codigoCentroCusto"
           width="400px"
           render={(_, item) => (
             <span>
-              {item.codigoCentroCusto + ' - ' + item.descricaoCentroCusto}
+              {`${item.codigoCentroCusto} - ${item.descricaoCentroCusto}`}
             </span>
           )}
         />

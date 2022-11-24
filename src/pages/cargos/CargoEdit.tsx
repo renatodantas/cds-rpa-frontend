@@ -32,12 +32,13 @@ export const CargoEdit = () => {
   }, [cargo]);
 
   const onFinish = async (values: UnsavedCargo) => {
+    console.log('values:', values);
     try {
       if (id === 'new') {
         await createCargo(values);
         message.info('Cargo criado com sucesso');
       } else {
-        await updateCargo(id, cargo);
+        await updateCargo(id, values);
         message.info('Cargo atualizado com sucesso');
       }
       navigate('/cargos');
@@ -66,13 +67,9 @@ export const CargoEdit = () => {
             <Input ref={focusRef} />
           </Form.Item>
 
-          <Space direction="vertical" />
-
           <Form.Item label="Centro de Custo" name="codigoCentroCusto">
             <Input placeholder="Código do centro de custo" />
           </Form.Item>
-
-          <Space direction="vertical" />
 
           <Form.Item
             label="Descrição do centro de custo"

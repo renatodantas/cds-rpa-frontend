@@ -1,134 +1,119 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
 import {
   Button,
   Col,
   Divider,
   Form,
   Input,
+  InputRef,
   message,
   Row,
+  Space,
   Typography
 } from 'antd';
-import { AxiosError } from 'axios';
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
-  AutonomosQueries,
+  createAutonomo,
   getAutonomoById,
-  saveNewAutonomo,
   updateAutonomo
 } from '../../api/autonomos.api';
-import { UnsavedAutonomo } from '../../models/autonomo';
+import { AUTONOMO_DEFAULT_VALUE, UnsavedAutonomo } from '../../models/autonomo';
 
 export const AutonomoEdit = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm<UnsavedAutonomo>();
+  const focusRef = useRef<InputRef>(null);
   const { id } = useParams();
-  const { data, isFetching } = useQuery({
-    queryKey: [AutonomosQueries.GetById, id],
-    queryFn: () => getAutonomoById(id),
-    refetchOnMount: true
-  });
+  const [autonomo, setAutonomo] = useState<UnsavedAutonomo>(
+    AUTONOMO_DEFAULT_VALUE
+  );
 
   useEffect(() => {
-    form.setFieldsValue({ ...data });
-  }, [data]);
+    focusRef.current?.focus();
+    getAutonomoById(id).then((res) => setAutonomo(res));
+  }, []);
 
-  const newAutonomoMutation = useMutation({
-    mutationFn: saveNewAutonomo
-  });
-
-  const updateAutonomoMutation = useMutation({
-    mutationFn: (values: UnsavedAutonomo) => updateAutonomo(id, values)
-  });
-
-  const isProcessingUpdate =
-    newAutonomoMutation.isLoading || updateAutonomoMutation.isLoading;
+  useEffect(() => {
+    form.setFieldsValue({ ...autonomo });
+  }, [autonomo]);
 
   const onFinish = async (values: UnsavedAutonomo) => {
     try {
       if (id === 'new') {
-        await newAutonomoMutation.mutateAsync(values);
-        message.info('Autônomo criado com sucesso');
+        await createAutonomo(values);
+        message.info('Cargo criado com sucesso');
       } else {
-        await updateAutonomoMutation.mutateAsync(values);
+        await updateAutonomo(id, values);
         message.info('Autônomo atualizado com sucesso');
       }
       navigate('/autonomos');
-    } catch (error) {
-      const err = error as AxiosError;
-      message.error(`Erro ao salvar autônomo: ${err.response?.data}`);
+    } catch (error: any) {
+      message.error(`Erro ao salvar autônomo: ${error}`);
     }
   };
 
   return (
     <Row>
-      <Col span={14} offset={5}>
+      <Col span={16} offset={4}>
         <Typography.Title level={4}>
           {id === 'new' ? 'Editar' : 'Criar novo'} autônomo
         </Typography.Title>
 
         <Form
           form={form}
-          disabled={isFetching || isProcessingUpdate}
-          initialValues={data}
-          className="autonomo-edit-form"
+          name="editAutonomoForm"
+          layout="vertical"
+          initialValues={autonomo}
+          validateMessages={{ required: '${label} é obrigatório' }}
           onFinish={onFinish}
           autoComplete="off"
-          layout="vertical"
         >
-          <Row gutter={24}>
-            <Col span={18}>
+          <Row>
+            <Col span={15}>
               <Form.Item label="Nome" name="nome" rules={[{ required: true }]}>
-                <Input placeholder="Nome" />
+                <Input placeholder="Nome" ref={focusRef} />
               </Form.Item>
             </Col>
-            <Col span={6}>
-              <Form.Item
-                label="CPF"
-                name="cpf"
-                rules={[{ required: true, len: 11 }]}
-              >
+            <Col span={8} offset={1}>
+              <Form.Item label="CPF" name="cpf">
                 <Input placeholder="CPF" />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col span={10}>
               <Form.Item label="Banco" name="banco">
-                <Input placeholder="Nome do banco" />
+                <Input placeholder="Banco" />
               </Form.Item>
             </Col>
-            <Col span={6}>
+            <Col span={4} offset={1}>
               <Form.Item label="Agência" name="agencia">
-                <Input placeholder="Agência" />
+                <Input type="number" placeholder="Agência" />
               </Form.Item>
             </Col>
-            <Col span={6}>
+            <Col span={4} offset={1}>
               <Form.Item label="Conta" name="conta">
-                <Input placeholder="C/C" />
+                <Input placeholder="Conta" />
               </Form.Item>
             </Col>
-            <Col span={6}>
+            <Col span={3} offset={1}>
               <Form.Item label="Operação" name="operacao">
                 <Input placeholder="Op." />
               </Form.Item>
             </Col>
-            <Col span={18}>
+            <Col span={24}>
               <Form.Item label="PIX" name="pix">
-                <Input placeholder="Código do PIX (CPF, celular, email ou chave)" />
+                <Input placeholder="CPF, e-mail, telefone ou chave " />
               </Form.Item>
             </Col>
           </Row>
 
-          <Divider style={{ marginTop: '0' }} />
+          <Divider />
 
-          <Form.Item>
+          <Space size="middle">
             <Button type="primary" htmlType="submit">
               Salvar
             </Button>
-            <Link to="/autonomos" style={{ marginLeft: 20 }}>
-              Voltar
-            </Link>
-          </Form.Item>
+            <Link to="/autonomos">Voltar</Link>
+          </Space>
         </Form>
       </Col>
     </Row>
