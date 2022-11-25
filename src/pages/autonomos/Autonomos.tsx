@@ -90,7 +90,7 @@ export const Autonomos = () => {
           title="CPF"
           dataIndex="cpf"
           width="400px"
-          render={(_, item) => <span>{maskCpf(item.cpf)}</span>}
+          render={(_, item) => <>{maskCpf(item.cpf)}</>}
         />
         <Column<Autonomo>
           dataIndex="actions"

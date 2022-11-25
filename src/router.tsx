@@ -3,29 +3,38 @@ import { createBrowserRouter } from 'react-router-dom';
 import { GenericError } from './pages/errors/GenericError';
 import { LayoutApp } from './pages/Layout';
 
-const LazyLogin = loadable(() => import('./pages/Login'), {
+const Login = loadable(() => import('./pages/Login'), {
   resolveComponent: (components) => components.Login
 });
 
-const LazyHome = loadable(() => import('./pages/Home'), {
+const Home = loadable(() => import('./pages/Home'), {
   resolveComponent: (components) => components.Home
 });
 
-const LazyCargos = loadable(() => import('./pages/cargos/Cargos'), {
+const Cargos = loadable(() => import('./pages/cargos/Cargos'), {
   resolveComponent: (components) => components.Cargos
 });
 
-const LazyCargoEdit = loadable(() => import('./pages/cargos/CargoEdit'), {
+const CargoEdit = loadable(() => import('./pages/cargos/CargoEdit'), {
   resolveComponent: (components) => components.CargoEdit
 });
 
-const LazyAutonomos = loadable(() => import('./pages/autonomos/Autonomos'), {
+const Autonomos = loadable(() => import('./pages/autonomos/Autonomos'), {
   resolveComponent: (components) => components.Autonomos
 });
 
 // prettier-ignore
-const LazyAutonomoEdit = loadable(() => import('./pages/autonomos/AutonomoEdit'), {
+const AutonomoEdit = loadable(() => import('./pages/autonomos/AutonomoEdit'), {
   resolveComponent: (components) => components.AutonomoEdit
+});
+
+const Contratos = loadable(() => import('./pages/contratos/Contratos'), {
+  resolveComponent: (components) => components.Contratos
+});
+
+// prettier-ignore
+const ContratoEdit = loadable(() => import('./pages/contratos/ContratoEdit'), {
+  resolveComponent: (components) => components.ContratoEdit
 });
 
 export const router = createBrowserRouter([
@@ -34,12 +43,14 @@ export const router = createBrowserRouter([
     element: <LayoutApp />,
     errorElement: <GenericError />,
     children: [
-      { index: true, element: <LazyHome /> },
-      { path: 'login', element: <LazyLogin /> },
-      { path: 'cargos', element: <LazyCargos /> },
-      { path: 'cargos/:id', element: <LazyCargoEdit /> },
-      { path: 'autonomos', element: <LazyAutonomos /> },
-      { path: 'autonomos/:id', element: <LazyAutonomoEdit /> }
+      { index: true, element: <Home /> },
+      { path: 'login', element: <Login /> },
+      { path: 'cargos', element: <Cargos /> },
+      { path: 'cargos/:id', element: <CargoEdit /> },
+      { path: 'autonomos', element: <Autonomos /> },
+      { path: 'autonomos/:id', element: <AutonomoEdit /> },
+      { path: 'contratos', element: <Contratos /> },
+      { path: 'contratos/:id', element: <ContratoEdit /> }
     ]
   }
 ]);

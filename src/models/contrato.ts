@@ -4,7 +4,7 @@ import type { Cargo } from './cargo';
 import type { Diaria } from './diaria';
 
 export interface Contrato {
-  id?: string;
+  id: number;
   vigenciaInicio: string;
   vigenciaFim: string;
   valorVT?: number;
@@ -18,9 +18,11 @@ export interface Contrato {
   _cargo?: Cargo;
 }
 
-export const CONTRATO_DEFAULT_VALUE: Contrato = {
+export type UnsavedContrato = Omit<Contrato, 'id'>;
+
+export const CONTRATO_DEFAULT_VALUE: UnsavedContrato = {
   vigenciaInicio: DateTime.now().toISODate(),
   vigenciaFim: DateTime.now().toISODate(),
   encerradoManualmente: false,
   diarias: []
-}
+};

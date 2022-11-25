@@ -40,7 +40,6 @@ export async function createAutonomo(item: UnsavedAutonomo) {
 }
 
 export async function updateAutonomo(id: unknown, item: UnsavedAutonomo) {
-  console.log('update:', item);
   return supabase
     .from(TABLE_NAME)
     .update({ ...item })

@@ -84,9 +84,9 @@ export const Cargos = () => {
           dataIndex="codigoCentroCusto"
           width="400px"
           render={(_, item) => (
-            <span>
+            <>
               {`${item.codigoCentroCusto} - ${item.descricaoCentroCusto}`}
-            </span>
+            </>
           )}
         />
         <Column<Cargo>

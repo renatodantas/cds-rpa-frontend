@@ -15,7 +15,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { createCargo, getCargoById, updateCargo } from '../../api/cargos.api';
 import { CARGO_DEFAULT_VALUE, UnsavedCargo } from '../../models/cargo';
 
-export const CargoEdit = () => {
+export const ContratoEdit = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm<UnsavedCargo>();
   const focusRef = useRef<InputRef>(null);
@@ -50,7 +50,7 @@ export const CargoEdit = () => {
     <Row>
       <Col span={8} offset={8}>
         <Typography.Title level={4}>
-          {id === 'new' ? 'Editar' : 'Criar novo'} cargo
+          {id === 'new' ? 'Editar' : 'Criar novo'} contrato
         </Typography.Title>
 
         <Form

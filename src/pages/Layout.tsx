@@ -1,6 +1,6 @@
 import { Layout } from 'antd';
 import { Outlet } from 'react-router-dom';
-import { Navbar } from '../lib/Navbar';
+import { Navbar } from '../components/Navbar';
 import './Layout.css';
 
 export const LayoutApp = (): JSX.Element => {
