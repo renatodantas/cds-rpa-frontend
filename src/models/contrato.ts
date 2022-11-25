@@ -1,19 +1,18 @@
-import { DateTime } from 'luxon';
+import dayjs from 'dayjs';
 import type { Autonomo } from './autonomo';
 import type { Cargo } from './cargo';
-import type { Diaria } from './diaria';
 
 export interface Contrato {
   id: number;
   vigenciaInicio: string;
   vigenciaFim: string;
-  valorVT?: number;
-  valorVR?: number;
-  valorDiaria?: number;
+  valorVT: number | null;
+  valorVR: number | null;
+  valorDiaria: number | null;
   encerradoManualmente: boolean;
-  idAutonomo?: string;
-  idCargo?: string;
-  diarias: Diaria[];
+  idAutonomo: number;
+  idCargo: number;
+  //diarias: Diaria[];
   _autonomo?: Autonomo;
   _cargo?: Cargo;
 }
@@ -21,8 +20,13 @@ export interface Contrato {
 export type UnsavedContrato = Omit<Contrato, 'id'>;
 
 export const CONTRATO_DEFAULT_VALUE: UnsavedContrato = {
-  vigenciaInicio: DateTime.now().toISODate(),
-  vigenciaFim: DateTime.now().toISODate(),
+  vigenciaInicio: dayjs().toISOString(),
+  vigenciaFim: dayjs().toISOString(),
+  valorVT: null,
+  valorVR: null,
+  valorDiaria: null,
   encerradoManualmente: false,
-  diarias: []
+  idAutonomo: -1,
+  idCargo: -1
+  //diarias: []
 };

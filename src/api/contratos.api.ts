@@ -17,7 +17,7 @@ export async function getContratos({
   return supabase
     .from(TABLE_NAME)
     .select('*')
-    .order(sort, { ascending })
+    .order(sort, { ascending, foreignTable: 'Autonomos' })
     .range(from, to);
 }
 

@@ -8,6 +8,6 @@ export function maskDate(date: string) {
   return DateTime.fromISO(date).toLocaleString();
 }
 
-export function maskCurrency(value?: number) {
+export function maskCurrency(value?: number | null) {
   return value?.toLocaleString('pt-br', { minimumFractionDigits: 2 }) || '';
 }
