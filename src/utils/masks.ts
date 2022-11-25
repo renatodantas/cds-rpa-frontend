@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { DateTime } from 'luxon';
 
 export function maskCpf(cpf: string): string {
@@ -5,7 +6,7 @@ export function maskCpf(cpf: string): string {
 }
 
 export function maskDate(date: string) {
-  return DateTime.fromISO(date).toLocaleString();
+  return dayjs(date).toLocaleString();
 }
 
 export function maskCurrency(value?: number | null) {

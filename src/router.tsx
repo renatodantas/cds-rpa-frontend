@@ -1,7 +1,7 @@
 import loadable from '@loadable/component';
 import { createBrowserRouter } from 'react-router-dom';
+import { App } from './App';
 import { GenericError } from './pages/errors/GenericError';
-import { LayoutApp } from './pages/Layout';
 
 const Login = loadable(() => import('./pages/Login'), {
   resolveComponent: (components) => components.Login
@@ -40,7 +40,7 @@ const ContratoEdit = loadable(() => import('./pages/contratos/ContratoEdit'), {
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <LayoutApp />,
+    element: <App />,
     errorElement: <GenericError />,
     children: [
       { index: true, element: <Home /> },
