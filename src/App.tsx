@@ -1,6 +1,5 @@
 import { Outlet } from 'react-router-dom';
 import styled from 'styled-components';
-import './App.css';
 import { Navbar } from './components/Navbar';
 
 const Layout = styled.div`
@@ -8,7 +7,7 @@ const Layout = styled.div`
   height: calc(100vh - 45px);
   border-radius: 5px;
   box-shadow: 0 5px 50px #b8b8b8;
-  background: rgb(241, 242, 246);
+  background: #F1F2F6;
 `;
 
 export const App = (): JSX.Element => {
