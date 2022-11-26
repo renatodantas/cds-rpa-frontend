@@ -1,14 +1,13 @@
-import { Layout, Space } from 'antd';
 import { Link } from 'react-router-dom';
 import logo from '../../assets/rpa-logo.png';
-import './style.css';
+import { Container, LinksContainer, Logo } from './style';
 
 export const Navbar = (): JSX.Element => {
-  const { Header } = Layout;
   return (
-    <Header>
-      <Space direction="horizontal" size="large">
-        <img src={logo} className="logo" />
+    <Container>
+      <Logo src={logo} />
+
+      <LinksContainer>
         <Link to="/" className="nav-link">
           Home
         </Link>
@@ -21,7 +20,7 @@ export const Navbar = (): JSX.Element => {
         <Link to="/contratos" className="nav-link">
           Contratos
         </Link>
-      </Space>
-    </Header>
+      </LinksContainer>
+    </Container>
   );
 };
