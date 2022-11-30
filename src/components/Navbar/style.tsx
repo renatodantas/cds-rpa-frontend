@@ -1,10 +1,10 @@
 import styled from 'styled-components';
 
-export const Container = styled.header`
+export const Container = styled.nav`
   display: flex;
   justify-content: space-between;
   border-bottom: 1px solid rgba(0,0,0,0.08);
-  padding: 0 ;
+  padding: 5px 40px;
 `;
 
 export const LinksContainer = styled.div`
@@ -12,7 +12,6 @@ export const LinksContainer = styled.div`
   justify-content: end;
   align-items: center;
   gap: 20px;
-  border: 1px dashed red;
 `;
 
 export const Logo = styled.img`

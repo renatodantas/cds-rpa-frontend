@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import styled from 'styled-components';
 import { Navbar } from './components/Navbar';
+import { Sidebar } from './components/Sidebar';
 
 const Layout = styled.div`
   margin: 20px;
@@ -10,11 +11,21 @@ const Layout = styled.div`
   background: #F1F2F6;
 `;
 
+const Container = styled.section`
+  display: grid;
+  grid-template-columns: 200px 100%;
+`;
+
 export const App = (): JSX.Element => {
   return (
     <Layout>
       <Navbar />
-      <Outlet />
+      <Container>
+        <Sidebar />
+        <div>
+          <Outlet />
+        </div>
+      </Container>
     </Layout>
   );
 };
