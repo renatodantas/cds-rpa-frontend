@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Navbar } from './components/Navbar';
 import { Sidebar } from './components/Sidebar';
 
-const Layout = styled.div`
+const Container = styled.div`
   margin: 20px;
   height: calc(100vh - 45px);
   border-radius: 5px;
@@ -11,21 +11,26 @@ const Layout = styled.div`
   background: #F1F2F6;
 `;
 
-const Container = styled.section`
-  display: grid;
-  grid-template-columns: 200px 100%;
+const Section = styled.section`
+  display: flex;
+  height: calc(100vh - 105px);
 `;
 
-export const App = (): JSX.Element => {
+const Main = styled.main`
+  padding: 20px;
+  flex: 1;
+`;
+
+export const App = () => {
   return (
-    <Layout>
+    <Container>
       <Navbar />
-      <Container>
+      <Section>
         <Sidebar />
-        <div>
+        <Main>
           <Outlet />
-        </div>
-      </Container>
-    </Layout>
+        </Main>
+      </Section>
+    </Container>
   );
 };

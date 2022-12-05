@@ -12,7 +12,7 @@ const links: LinkProps[] = [
   { label: 'Contratos', to: '/contratos', icon: HomeOutlined },
 ];
 
-export const Sidebar = (): JSX.Element => {
+export const Sidebar = () => {
   return (
     <Container>
       {links.map(({ label, to, icon: Component }) =>

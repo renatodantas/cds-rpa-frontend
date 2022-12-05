@@ -14,6 +14,7 @@ import { SorterResult } from 'antd/lib/table/interface';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getCargos, removeCargo } from '../../api/cargos.api';
+import { PageHeader } from '../../components/PageHeader';
 import { Cargo } from '../../models/cargo';
 import { DEFAULT_PAGE_PARAMS, PageParams } from '../../models/page-params';
 import { DEFAULT_PAGINATION, Pagination } from '../../models/pagination';
@@ -32,8 +33,8 @@ export const Cargos = () => {
   const fetchCargos = async () => {
     const res = await getCargos(pageParams);
     setCargos({
-      items: res.data!,
-      total: res.count!
+      items: res.data || DEFAULT_PAGINATION.items,
+      total: res.count || DEFAULT_PAGINATION.total
     });
   };
 
@@ -52,12 +53,12 @@ export const Cargos = () => {
 
   return (
     <>
-      <Space direction="horizontal" size="large" align="start">
+      <PageHeader>
         <Typography.Title level={4}>Cargos</Typography.Title>
         <Link to="/cargos/new">
           <Button type="primary" size="small" icon={<PlusOutlined />} />
         </Link>
-      </Space>
+      </PageHeader>
 
       <Table<Cargo>
         rowKey="id"
