@@ -11,13 +11,13 @@ export async function getCargos({
   page,
   size,
   ascending,
-  sort
+  sort = 'nome'
 }: PageParams<Cargo>) {
   const { from, to } = getPageRange(page, size);
   return supabase
     .from(TABLE_NAME)
     .select('*')
-    .order(sort!, { ascending })
+    .order(sort, { ascending })
     .range(from, to);
 }
 

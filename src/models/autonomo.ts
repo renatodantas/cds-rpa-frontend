@@ -2,11 +2,11 @@ export interface Autonomo {
   id: number;
   nome: string;
   cpf: string;
-  banco?: string;
-  agencia?: number;
-  conta?: string;
-  operacao?: string;
-  pix?: string;
+  banco?: string | null;
+  agencia?: number | null;
+  conta?: string | null;
+  operacao?: string | null;
+  pix?: string | null;
 }
 
 export type UnsavedAutonomo = Omit<Autonomo, 'id'>;

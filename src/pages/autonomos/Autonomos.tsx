@@ -34,8 +34,8 @@ export const Autonomos = () => {
   const fetchAutonomos = async () => {
     const res = await getAutonomos(pageParams);
     setAutonomos({
-      items: res.data!,
-      total: res.count!
+      items: res.data || DEFAULT_PAGINATION.items,
+      total: res.count || DEFAULT_PAGINATION.total
     });
   };
 

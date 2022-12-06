@@ -1,7 +1,7 @@
 export interface PageParams<T> {
   page: number;
   size: number;
-  sort?: keyof T;
+  sort: keyof T;
   ascending: boolean;
 }
 
@@ -9,10 +9,11 @@ export const DEFAULT_PAGE = 1;
 export const DEFAULT_SIZE = 10;
 export const DEFAULT_ORDER = true;
 
-export const DEFAULT_PAGE_PARAMS: PageParams<unknown> = {
+export const DEFAULT_PAGE_PARAMS: PageParams<never> = {
   page: DEFAULT_PAGE,
   size: DEFAULT_SIZE,
-  ascending: DEFAULT_ORDER
+  ascending: DEFAULT_ORDER,
+  sort: ''
 };
 
 export function getPaginationRange(

@@ -15,13 +15,13 @@ export async function getAutonomos({
   page,
   size,
   ascending,
-  sort
+  sort = 'nome'
 }: PageParams<Autonomo>) {
   const { from, to } = getPageRange(page, size);
   return supabase
     .from(TABLE_NAME)
     .select('*')
-    .order(sort!, { ascending })
+    .order(sort, { ascending })
     .range(from, to);
 }
 
@@ -32,7 +32,10 @@ export async function getAutonomoById(id: unknown): Promise<UnsavedAutonomo> {
     .select('*')
     .eq('id', id)
     .single();
-  return item.data || AUTONOMO_DEFAULT_VALUE;
+  if (!item.data) {
+    throw Error('Nenhum autônomo encontrado com ID ' + id);
+  }
+  return item.data;
 }
 
 export async function createAutonomo(item: UnsavedAutonomo) {
