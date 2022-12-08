@@ -7,23 +7,23 @@ import {
   InputRef,
   message,
   Row,
-  Space,
-  Typography
+  Space
 } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { createCargo, getCargoById, updateCargo } from '../../api/cargos.api';
+import { CdsLayout } from '../../components/CdsLayout';
 import { CARGO_DEFAULT_VALUE, UnsavedCargo } from '../../models/cargo';
 
 export const CargoEdit = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm<UnsavedCargo>();
-  const focusRef = useRef<InputRef>(null);
   const { id } = useParams();
   const [cargo, setCargo] = useState<UnsavedCargo>(CARGO_DEFAULT_VALUE);
+  const title = `${id === 'new' ? 'Editar' : 'Criar novo'} cargo`;
+  const backUrl = '/cargos';
 
   useEffect(() => {
-    focusRef.current?.focus();
     getCargoById(id).then((res) => setCargo(res));
   }, []);
 
@@ -40,53 +40,51 @@ export const CargoEdit = () => {
         await updateCargo(id, values);
         message.info('Cargo atualizado com sucesso');
       }
-      navigate('/cargos');
-    } catch (error: any) {
+      navigate(backUrl);
+    } catch (error: unknown) {
       message.error(`Erro ao salvar cargo: ${error}`);
     }
   };
 
   return (
-    <Row>
-      <Col span={8} offset={8}>
-        <Typography.Title level={4}>
-          {id === 'new' ? 'Editar' : 'Criar novo'} cargo
-        </Typography.Title>
-
-        <Form
-          form={form}
-          name="editCargoForm"
-          layout="vertical"
-          initialValues={cargo}
-          validateMessages={{ required: '${label} é obrigatório' }}
-          onFinish={onFinish}
-          autoComplete="off"
-        >
-          <Form.Item label="Nome" name="nome" rules={[{ required: true }]}>
-            <Input ref={focusRef} />
-          </Form.Item>
-
-          <Form.Item label="Centro de Custo" name="codigoCentroCusto">
-            <Input placeholder="Código do centro de custo" />
-          </Form.Item>
-
-          <Form.Item
-            label="Descrição do centro de custo"
-            name="descricaoCentroCusto"
+    <CdsLayout title={title} backUrl={backUrl}>
+      <Row>
+        <Col span={8}>
+          <Form
+            form={form}
+            name="editCargoForm"
+            layout="vertical"
+            initialValues={cargo}
+            validateMessages={{ required: '${label} é obrigatório' }}
+            onFinish={onFinish}
+            autoComplete="off"
           >
-            <Input placeholder="Descrição do centro de custo" />
-          </Form.Item>
+            <Form.Item label="Nome" name="nome" rules={[{ required: true }]}>
+              <Input placeholder='Nome' autoFocus />
+            </Form.Item>
 
-          <Divider />
+            <Form.Item label="Centro de Custo" name="codigoCentroCusto">
+              <Input placeholder="Código do centro de custo" />
+            </Form.Item>
 
-          <Space size="middle">
-            <Button type="primary" htmlType="submit">
-              Salvar
-            </Button>
-            <Link to="/cargos">Voltar</Link>
-          </Space>
-        </Form>
-      </Col>
-    </Row>
+            <Form.Item
+              label="Descrição do centro de custo"
+              name="descricaoCentroCusto"
+            >
+              <Input placeholder="Descrição do centro de custo" />
+            </Form.Item>
+
+            <Divider />
+
+            <Space size="middle">
+              <Button type="primary" htmlType="submit">
+                Salvar
+              </Button>
+              <Link to={backUrl}>Voltar</Link>
+            </Space>
+          </Form>
+        </Col>
+      </Row>
+    </CdsLayout>
   );
 };

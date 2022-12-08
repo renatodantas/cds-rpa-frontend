@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { Contrato, CONTRATO_DEFAULT_VALUE, UnsavedContrato } from '../models/contrato';
 import {
   getPaginationRange,
@@ -16,23 +17,51 @@ export async function getContratos({
   const { from, to } = getPaginationRange(page, size);
   return supabase
     .from(TABLE_NAME)
-    .select('*')
-    .order(sort, { ascending, foreignTable: 'Autonomos' })
-    .range(from, to);
+    .select('*, Autonomos (nome)')
+    // .order(sort, { ascending })
+    .range(from, to)
+    .then(res => ({
+      count: res.count || 0,
+      data: res.data?.map(item => ({
+        id: item.id,
+        vigenciaInicio: dayjs(item.vigenciaInicio),
+        vigenciaFim: dayjs(item.vigenciaFim),
+        autonomo: item.Autonomos
+      }))
+    }));
 }
 
 export async function getContratoById(id: unknown): Promise<UnsavedContrato> {
-  if (id === 'new') return CONTRATO_DEFAULT_VALUE;
-  const item = await supabase
-    .from(TABLE_NAME)
-    .select('*')
-    .eq('id', id)
-    .single();
-  return item.data || CONTRATO_DEFAULT_VALUE;
+  return CONTRATO_DEFAULT_VALUE;
+  // if (id === 'new') return CONTRATO_DEFAULT_VALUE;
+  // const res = await supabase
+  //   .from(TABLE_NAME)
+  //   .select(`
+  //     id,
+  //     vigenciaInicio,
+  //     vigenciaFim,
+  //     valorVT,
+  //     valorVR,
+  //     valorDiaria,
+  //     encerradoManualmente,
+  //     Autonomos (id, nome)`)
+  //   .eq('id', id)
+  //   .single()
+  //   .then(item => ({
+  //     id: item.data?.id,
+  //     vigenciaInicio: dayjs(item.data?.vigenciaInicio),
+  //     vigenciaFim: dayjs(item.data?.vigenciaFim),
+  //     autonomo: item.data?.Autonomos
+  //   }));
+  // return {
+  //   id: res.id,
+  //   vigenciaInicio: res.vigenciaInicio
+  // };
 }
 
 export async function createContrato(item: UnsavedContrato) {
-  return supabase.from(TABLE_NAME).insert(item);
+  // FIXME: tratar
+  // return supabase.from(TABLE_NAME).insert(item);
 }
 
 export async function updateContrato(id: unknown, item: UnsavedContrato) {

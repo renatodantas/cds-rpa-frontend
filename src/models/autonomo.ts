@@ -1,17 +1,27 @@
-export interface Autonomo {
-  id: number;
-  nome: string;
-  cpf: string;
-  banco?: string | null;
-  agencia?: number | null;
-  conta?: string | null;
-  operacao?: string | null;
-  pix?: string | null;
-}
+import { z } from 'zod';
 
-export type UnsavedAutonomo = Omit<Autonomo, 'id'>;
+const AutonomoSchema = z.object({
+  id: z.number().nullable(),
+  nome: z.string(),
+  cpf: z.string(),
+  banco: z.string().nullable(),
+  agencia: z.number().nullable(),
+  conta: z.string().nullable(),
+  operacao: z.string().nullable(),
+  pix: z.string().nullable(),
+});
 
-export const AUTONOMO_DEFAULT_VALUE: UnsavedAutonomo = Object.freeze({
+export type Autonomo = z.output<typeof AutonomoSchema>;
+
+// export type UnsavedAutonomo = Omit<Autonomo, 'id'>;
+
+export const AUTONOMO_DEFAULT_VALUE: Autonomo = Object.freeze({
+  id: null,
   nome: '',
-  cpf: ''
+  cpf: '',
+  banco: null,
+  agencia: null,
+  conta: null,
+  operacao: null,
+  pix: null,
 });

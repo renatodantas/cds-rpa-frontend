@@ -1,4 +1,4 @@
-import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import { DeleteOutlined } from '@ant-design/icons';
 import {
   Button,
   Empty,
@@ -13,15 +13,15 @@ import Column from 'antd/lib/table/Column';
 import { SorterResult } from 'antd/lib/table/interface';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getAutonomos, removeAutonomo } from '../../api/autonomos.api';
+import { findAutonomos } from '../../api/autonomos.api';
+import { CdsLayout } from '../../components/CdsLayout';
 import { Autonomo } from '../../models/autonomo';
 import { DEFAULT_PAGE_PARAMS, PageParams } from '../../models/page-params';
 import { DEFAULT_PAGINATION, Pagination } from '../../models/pagination';
 import { maskCpf } from '../../utils/masks';
 
 export const Autonomos = () => {
-  const [autonomos, setAutonomos] =
-    useState<Pagination<Autonomo>>(DEFAULT_PAGINATION);
+  const [autonomos, setAutonomos] = useState<Pagination<Autonomo>>(DEFAULT_PAGINATION);
   const [pageParams, setPageParams] = useState<PageParams<Autonomo>>({
     ...DEFAULT_PAGE_PARAMS,
     sort: 'nome'
@@ -31,37 +31,34 @@ export const Autonomos = () => {
     fetchAutonomos();
   }, [pageParams]);
 
-  const fetchAutonomos = async () => {
-    const res = await getAutonomos(pageParams);
-    setAutonomos({
-      items: res.data || DEFAULT_PAGINATION.items,
-      total: res.count || DEFAULT_PAGINATION.total
-    });
+  const fetchAutonomos = () => {
+    findAutonomos(pageParams)
+      .then(res =>
+        setAutonomos({
+          items: res.items || DEFAULT_PAGINATION.items,
+          total: res.total || DEFAULT_PAGINATION.total
+        })
+      )
+      .catch(err => {
+        message.error(err.message);
+      });
   };
 
   const handleChange: TableProps<Autonomo>['onChange'] = (_, __, sorter) => {
     const { field, order } = sorter as SorterResult<Autonomo>;
-    console.log(sorter);
     const sort = field as keyof Autonomo;
     const ascending = order === 'ascend';
-    setPageParams({ ...pageParams, sort, ascending });
+    // setPageParams({ ...pageParams, sort, ascending });
   };
 
   const handleRemoveAutonomo = async (id: number) => {
-    await removeAutonomo(id);
+    // await removeAutonomo(id);
     message.info('Autônomo excluído com sucesso');
-    fetchAutonomos();
+    // fetchAutonomos();
   };
 
   return (
-    <>
-      <Space direction="horizontal" size="large" align="start">
-        <Typography.Title level={4}>Autônomos</Typography.Title>
-        <Link to="/autonomos/new">
-          <Button type="primary" size="small" icon={<PlusOutlined />} />
-        </Link>
-      </Space>
-
+    <CdsLayout title='Autônomos' addUrl='/autonomos/new'>
       <Table<Autonomo>
         rowKey="id"
         bordered
@@ -73,8 +70,8 @@ export const Autonomos = () => {
         sortDirections={['ascend', 'descend']}
         pagination={{
           position: ['bottomCenter'],
-          current: pageParams.page,
-          pageSize: pageParams.size
+          // current: pageParams.page,
+          // pageSize: pageParams.size
         }}
       >
         <Column<Autonomo>
@@ -108,7 +105,7 @@ export const Autonomos = () => {
                       <Typography.Text strong>{item.nome}</Typography.Text>?
                     </Typography.Text>
                   }
-                  onConfirm={() => handleRemoveAutonomo(item.id)}
+                  onConfirm={() => handleRemoveAutonomo(item.id!!)}
                   okText="Sim"
                   cancelText="Não"
                 >
@@ -121,6 +118,6 @@ export const Autonomos = () => {
           }}
         />
       </Table>
-    </>
+    </CdsLayout>
   );
 };

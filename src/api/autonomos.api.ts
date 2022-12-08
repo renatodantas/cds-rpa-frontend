@@ -1,54 +1,42 @@
 import {
   Autonomo,
-  AUTONOMO_DEFAULT_VALUE,
-  UnsavedAutonomo
+  AUTONOMO_DEFAULT_VALUE
 } from '../models/autonomo';
 import {
   getPaginationRange as getPageRange,
   PageParams
 } from '../models/page-params';
-import { supabase } from '../utils/supabase';
+import { Pagination } from '../models/pagination';
+import { http } from '../utils/http-client';
 
-const TABLE_NAME = 'Autonomos';
+const API = '/autonomos';
 
-export async function getAutonomos({
+export async function findAutonomos({
   page,
   size,
   ascending,
   sort = 'nome'
 }: PageParams<Autonomo>) {
   const { from, to } = getPageRange(page, size);
-  return supabase
-    .from(TABLE_NAME)
-    .select('*')
-    .order(sort, { ascending })
-    .range(from, to);
+  return http.get<Pagination<Autonomo>>(API)
+    .then(res => res.data);
 }
 
-export async function getAutonomoById(id: unknown): Promise<UnsavedAutonomo> {
+export async function findAutonomoById(id: unknown): Promise<Autonomo> {
   if (id === 'new') return AUTONOMO_DEFAULT_VALUE;
-  const item = await supabase
-    .from(TABLE_NAME)
-    .select('*')
-    .eq('id', id)
-    .single();
-  if (!item.data) {
-    throw Error('Nenhum autônomo encontrado com ID ' + id);
-  }
-  return item.data;
+  return http
+    .get(`${API}/${id}`)
+    .then(res => res.data);
 }
 
-export async function createAutonomo(item: UnsavedAutonomo) {
-  return supabase.from(TABLE_NAME).insert(item);
+export async function createAutonomo(item: Autonomo) {
+  return http.post(API, { item });
 }
 
-export async function updateAutonomo(id: unknown, item: UnsavedAutonomo) {
-  return supabase
-    .from(TABLE_NAME)
-    .update({ ...item })
-    .eq('id', id);
+export async function updateAutonomo(id: unknown, item: Autonomo) {
+  return http.put(`${API}/${id}`, { item });
 }
 
 export async function removeAutonomo(id: unknown) {
-  return supabase.from(TABLE_NAME).delete().eq('id', id);
+  return http.delete(`${API}/${id}`);
 }

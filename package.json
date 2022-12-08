@@ -12,13 +12,14 @@
     "@ant-design/colors": "^6.0.0",
     "@ant-design/icons": "^4.8.0",
     "@loadable/component": "^5.15.2",
-    "@supabase/supabase-js": "^2.1.2",
     "antd": "^5.0.4",
-    "dayjs": "^1.11.6",
+    "axios": "^1.2.1",
+    "dayjs": "^1.11.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.4.4",
-    "styled-components": "^5.3.6"
+    "styled-components": "^5.3.6",
+    "zod": "^3.19.1"
   },
   "devDependencies": {
     "@types/loadable__component": "^5.13.4",
@@ -31,7 +32,6 @@
     "@vitejs/plugin-react": "^2.2.0",
     "eslint": "^8.29.0",
     "eslint-plugin-react": "^7.31.11",
-    "supabase": "^1.18.1",
     "typescript": "^4.9.3",
     "vite": "^3.2.5"
   }

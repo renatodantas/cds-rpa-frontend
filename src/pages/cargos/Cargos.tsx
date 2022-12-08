@@ -1,4 +1,4 @@
-import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import { DeleteOutlined } from '@ant-design/icons';
 import {
   Button,
   Empty,
@@ -14,7 +14,7 @@ import { SorterResult } from 'antd/lib/table/interface';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getCargos, removeCargo } from '../../api/cargos.api';
-import { PageHeader } from '../../components/PageHeader';
+import { CdsLayout } from '../../components/CdsLayout';
 import { Cargo } from '../../models/cargo';
 import { DEFAULT_PAGE_PARAMS, PageParams } from '../../models/page-params';
 import { DEFAULT_PAGINATION, Pagination } from '../../models/pagination';
@@ -30,12 +30,14 @@ export const Cargos = () => {
     fetchCargos();
   }, [pageParams]);
 
-  const fetchCargos = async () => {
-    const res = await getCargos(pageParams);
-    setCargos({
-      items: res.data || DEFAULT_PAGINATION.items,
-      total: res.count || DEFAULT_PAGINATION.total
-    });
+  const fetchCargos = () => {
+    getCargos(pageParams)
+      .then(res =>
+        setCargos({
+          items: res.data || DEFAULT_PAGINATION.items,
+          total: res.count || DEFAULT_PAGINATION.total
+        })
+      ).catch(err => message.error(err.message));
   };
 
   const handleChange: TableProps<Cargo>['onChange'] = (_, __, sorter) => {
@@ -52,14 +54,7 @@ export const Cargos = () => {
   };
 
   return (
-    <>
-      <PageHeader>
-        <Typography.Title level={4}>Cargos</Typography.Title>
-        <Link to="/cargos/new">
-          <Button type="primary" size="small" icon={<PlusOutlined />} />
-        </Link>
-      </PageHeader>
-
+    <CdsLayout title='Cargos' addUrl='/cargos/new'>
       <Table<Cargo>
         rowKey="id"
         bordered
@@ -119,6 +114,6 @@ export const Cargos = () => {
           }}
         />
       </Table>
-    </>
+    </CdsLayout>
   );
 };

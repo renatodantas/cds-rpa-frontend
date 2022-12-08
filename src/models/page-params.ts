@@ -1,13 +1,13 @@
+export const DEFAULT_PAGE = 1;
+export const DEFAULT_SIZE = 10;
+export const DEFAULT_ORDER = true;
+
 export interface PageParams<T> {
   page: number;
   size: number;
   sort: keyof T;
   ascending: boolean;
 }
-
-export const DEFAULT_PAGE = 1;
-export const DEFAULT_SIZE = 10;
-export const DEFAULT_ORDER = true;
 
 export const DEFAULT_PAGE_PARAMS: PageParams<never> = {
   page: DEFAULT_PAGE,

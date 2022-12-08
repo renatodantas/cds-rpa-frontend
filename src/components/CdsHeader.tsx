@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
-export const PageHeader = styled.div`
+export const CdsHeader = styled.div`
   display: flex;
-  align-items: baseline;
   gap: 1rem;
+  margin-bottom: 1rem;
 `;

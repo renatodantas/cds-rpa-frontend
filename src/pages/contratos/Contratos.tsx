@@ -1,4 +1,4 @@
-import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import { DeleteOutlined } from '@ant-design/icons';
 import {
   Button,
   Empty,
@@ -6,35 +6,38 @@ import {
   Popconfirm,
   Space,
   Table,
-  TableProps,
-  Typography
+  TableProps
 } from 'antd';
 import Column from 'antd/lib/table/Column';
 import { SorterResult } from 'antd/lib/table/interface';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getContratos, removeContrato } from '../../api/contratos.api';
+import { CdsLayout } from '../../components/CdsLayout';
 import { Contrato } from '../../models/contrato';
 import { DEFAULT_PAGE_PARAMS, PageParams } from '../../models/page-params';
 import { DEFAULT_PAGINATION, Pagination } from '../../models/pagination';
-import { maskCurrency, maskDate } from '../../utils/masks';
+import { maskCurrency } from '../../utils/masks';
 
 export const Contratos = () => {
   const [contratos, setContratos] = useState<Pagination<Contrato>>(DEFAULT_PAGINATION);
   const [pageParams, setPageParams] = useState<PageParams<Contrato>>({
     ...DEFAULT_PAGE_PARAMS,
+    sort: 'vigenciaInicio'
   });
 
   useEffect(() => {
     fetchContratos();
   }, [pageParams]);
 
-  const fetchContratos = async () => {
-    const res = await getContratos(pageParams);
-    setContratos({
-      items: res.data || [],
-      total: res.count || 0
-    });
+  const fetchContratos = () => {
+    getContratos(pageParams)
+      .then(res =>
+        setContratos({
+          items: res.data || DEFAULT_PAGINATION.items,
+          total: res.count || DEFAULT_PAGINATION.total
+        })
+      ).catch(err => message.error(`Erro ao obter contratos: ${err}`));
   };
 
   const handleChange: TableProps<Contrato>['onChange'] = (_, __, sorter) => {
@@ -51,14 +54,7 @@ export const Contratos = () => {
   };
 
   return (
-    <>
-      <Space direction="horizontal" size="large" align="start">
-        <Typography.Title level={4}>Contratos</Typography.Title>
-        <Link to="/contratos/new">
-          <Button type="primary" size="small" icon={<PlusOutlined />} />
-        </Link>
-      </Space>
-
+    <CdsLayout title='Contratos' addUrl='/contratos/new'>
       <Table<Contrato>
         rowKey="id"
         bordered
@@ -77,7 +73,7 @@ export const Contratos = () => {
           title="Vigência"
           dataIndex="vigenciaInicio"
           render={(_, item) => <Link to={`/contratos/${item.id}`}>{
-            `${maskDate(item.vigenciaInicio)} a ${maskDate(item.vigenciaFim)}`
+            `${item.vigenciaInicio.toISOString()} a ${item.vigenciaFim.toISOString()}`
           }</Link>}
         />
         <Column<Contrato>
@@ -134,6 +130,6 @@ export const Contratos = () => {
           }}
         />
       </Table>
-    </>
+    </CdsLayout>
   );
 };
