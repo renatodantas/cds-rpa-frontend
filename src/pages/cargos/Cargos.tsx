@@ -16,12 +16,12 @@ import { Link } from 'react-router-dom';
 import { getCargos, removeCargo } from '../../api/cargos.api';
 import { CdsLayout } from '../../components/CdsLayout';
 import { Cargo } from '../../models/cargo';
-import { DEFAULT_PAGE_PARAMS, PageParams } from '../../models/page-params';
-import { DEFAULT_PAGINATION, Pagination } from '../../models/pagination';
+import { DEFAULT_PAGE_PARAMS, PaginationInput } from '../../models/page-params';
+import { DEFAULT_PAGINATION, PaginationOutput } from '../../models/pagination';
 
 export const Cargos = () => {
-  const [cargos, setCargos] = useState<Pagination<Cargo>>(DEFAULT_PAGINATION);
-  const [pageParams, setPageParams] = useState<PageParams<Cargo>>({
+  const [cargos, setCargos] = useState<PaginationOutput<Cargo>>(DEFAULT_PAGINATION);
+  const [pageParams, setPageParams] = useState<PaginationInput<Cargo>>({
     ...DEFAULT_PAGE_PARAMS,
     sort: 'nome'
   });

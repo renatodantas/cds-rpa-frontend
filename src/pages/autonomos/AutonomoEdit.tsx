@@ -7,59 +7,66 @@ import {
   Row,
   Space
 } from 'antd';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useQueryClient } from 'react-query';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
+  AutonomosQueries,
   createAutonomo,
   findAutonomoById,
   updateAutonomo
 } from '../../api/autonomos.api';
 import { CdsLayout } from '../../components/CdsLayout';
-import { Autonomo, AUTONOMO_DEFAULT_VALUE } from '../../models/autonomo';
+import { Autonomo } from '../../models/autonomo';
+
+const BACK_URL = '/autonomos';
 
 export const AutonomoEdit = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [form] = Form.useForm<Autonomo>();
   const { id } = useParams();
-  const [autonomo, setAutonomo] = useState<Autonomo>(AUTONOMO_DEFAULT_VALUE);
   const title = `${id === 'new' ? 'Editar' : 'Criar novo'} autônomo`;
-  const backUrl = '/autonomos';
+  const { mutate: createItem } = createAutonomo();
+  const { mutate: updateItem } = updateAutonomo(id);
+  const { data, isLoading } = findAutonomoById(id);
 
   useEffect(() => {
-    findAutonomoById(id).then((res) => setAutonomo(res));
-  }, []);
+    form.setFieldsValue(data);
+  }, [data]);
 
-  useEffect(() => {
-    form.setFieldsValue({ ...autonomo });
-  }, [autonomo]);
-
-  const onFinish = async (values: Autonomo) => {
-    try {
-      if (id === 'new') {
-        await createAutonomo(values);
-        message.info('Cargo criado com sucesso');
-      } else {
-        await updateAutonomo(id, values);
-        message.info('Autônomo atualizado com sucesso');
-      }
-      navigate(backUrl);
-    } catch (error: unknown) {
-      message.error(`Erro ao salvar autônomo: ${error}`);
+  const handleSubmit = (values: Autonomo) => {
+    if (id === 'new') {
+      return createItem(values, {
+        onSuccess: onSuccess('Autônomo criado com sucesso'),
+        onError: error => onError(`Erro ao criar autônomo: ${error}`)
+      });
     }
+    updateItem(values, {
+      onSuccess: onSuccess('Autônomo atualizado com sucesso'),
+      onError: error => onError(`Erro ao atualizar autônomo: ${error}`)
+    });
+  };
+  const onSuccess = (infoMessage: string) => () => {
+    message.info(infoMessage);
+    queryClient.invalidateQueries(AutonomosQueries.LIST);
+    navigate(BACK_URL);
+  };
+  const onError = (errorMessage: string) => {
+    message.error(errorMessage);
   };
 
   return (
-    <CdsLayout title={title} backUrl={backUrl}>
+    <CdsLayout title={title} backUrl={BACK_URL}>
       <Row>
         <Col span={16}>
           <Form
-            form={form}
-            name="editAutonomoForm"
-            layout="vertical"
-            initialValues={autonomo}
-            validateMessages={{ required: '${label} é obrigatório' }}
-            onFinish={onFinish}
             autoComplete="off"
+            disabled={isLoading}
+            form={form}
+            layout="vertical"
+            name="editAutonomoForm"
+            onFinish={handleSubmit}
           >
             <Row>
               <Col span={15}>
@@ -68,8 +75,8 @@ export const AutonomoEdit = () => {
                 </Form.Item>
               </Col>
               <Col span={8} offset={1}>
-                <Form.Item label="CPF" name="cpf">
-                  <Input placeholder="CPF" />
+                <Form.Item label="CPF" name="cpf" rules={[{ required: true, len: 11 }]}>
+                  <Input placeholder="CPF" maxLength={11} />
                 </Form.Item>
               </Col>
               <Col span={10}>
@@ -105,7 +112,7 @@ export const AutonomoEdit = () => {
               <Button type="primary" htmlType="submit">
                 Salvar
               </Button>
-              <Link to={backUrl}>Voltar</Link>
+              <Link to={BACK_URL}>Voltar</Link>
             </Space>
           </Form>
         </Col>

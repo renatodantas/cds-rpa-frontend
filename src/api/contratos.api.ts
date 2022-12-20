@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import { Contrato, CONTRATO_DEFAULT_VALUE, UnsavedContrato } from '../models/contrato';
 import {
   getPaginationRange,
-  PageParams
+  PaginationInput
 } from '../models/page-params';
 import { supabase } from '../utils/supabase';
 
@@ -13,7 +13,7 @@ export async function getContratos({
   size,
   ascending,
   sort = 'vigenciaInicio'
-}: PageParams<Contrato>) {
+}: PaginationInput<Contrato>) {
   const { from, to } = getPaginationRange(page, size);
   return supabase
     .from(TABLE_NAME)

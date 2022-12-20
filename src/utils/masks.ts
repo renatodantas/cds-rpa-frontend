@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 
 export function maskCpf(cpf: string): string {
-  return `${cpf.substring(0, 3)}.###.${cpf.substring(6, 9)}-##`;
+  return `${cpf.substring(0, 3)}.***.${cpf.substring(6, 9)}-**`;
 }
 
 export function maskDate(date: string) {

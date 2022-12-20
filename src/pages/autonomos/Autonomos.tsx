@@ -11,76 +11,87 @@ import {
 } from 'antd';
 import Column from 'antd/lib/table/Column';
 import { SorterResult } from 'antd/lib/table/interface';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useQueryClient } from 'react-query';
 import { Link } from 'react-router-dom';
-import { findAutonomos } from '../../api/autonomos.api';
+import { AutonomosQueries, deleteAutonomo, findAutonomos } from '../../api/autonomos.api';
 import { CdsLayout } from '../../components/CdsLayout';
 import { Autonomo } from '../../models/autonomo';
-import { DEFAULT_PAGE_PARAMS, PageParams } from '../../models/page-params';
-import { DEFAULT_PAGINATION, Pagination } from '../../models/pagination';
+import { DEFAULT_PAGE_PARAMS, PaginationInput } from '../../models/pagination';
 import { maskCpf } from '../../utils/masks';
 
 export const Autonomos = () => {
-  const [autonomos, setAutonomos] = useState<Pagination<Autonomo>>(DEFAULT_PAGINATION);
-  const [pageParams, setPageParams] = useState<PageParams<Autonomo>>({
+  const [pageParams, setPageParams] = useState<PaginationInput<Autonomo>>({
     ...DEFAULT_PAGE_PARAMS,
     sort: 'nome'
   });
 
-  useEffect(() => {
-    fetchAutonomos();
-  }, [pageParams]);
+  const queryClient = useQueryClient();
+  const { mutateAsync: deleteItem } = deleteAutonomo();
 
-  const fetchAutonomos = () => {
-    findAutonomos(pageParams)
-      .then(res =>
-        setAutonomos({
-          items: res.items || DEFAULT_PAGINATION.items,
-          total: res.total || DEFAULT_PAGINATION.total
-        })
-      )
-      .catch(err => {
-        message.error(err.message);
-      });
-  };
+  // useEffect(() => {
+  // fetchAutonomos();
+  // }, [pageParams]);
+
+  // const fetchAutonomos = () => {
+  //   findAutonomos(pageParams)
+  //     .then(res =>
+  //       setAutonomos({
+  //         items: res.items || DEFAULT_PAGINATION.items,
+  //         total: res.total || DEFAULT_PAGINATION.total
+  //       })
+  //     )
+  //     .catch(err => {
+  //       message.error(err.message);
+  //     });
+  // };
+
+  const { data, isLoading, isError, error } = findAutonomos(pageParams);
+
+  if (isError) {
+    message.error(`Erro ao consultar autônomos: ${error}`);
+  }
 
   const handleChange: TableProps<Autonomo>['onChange'] = (_, __, sorter) => {
     const { field, order } = sorter as SorterResult<Autonomo>;
     const sort = field as keyof Autonomo;
     const ascending = order === 'ascend';
-    // setPageParams({ ...pageParams, sort, ascending });
+    setPageParams({ ...pageParams, sort, ascending });
   };
 
-  const handleRemoveAutonomo = async (id: number) => {
-    // await removeAutonomo(id);
-    message.info('Autônomo excluído com sucesso');
-    // fetchAutonomos();
+  const handleRemoveAutonomo = (id: number) => {
+    deleteItem(id, {
+      onSuccess: () => {
+        message.info('Autônomo excluído com sucesso');
+        queryClient.invalidateQueries([AutonomosQueries.LIST]);
+      },
+      onError: error => {
+        message.error(`Erro ao excluir autônomo: ${error}`);
+      }
+    });
   };
 
   return (
     <CdsLayout title='Autônomos' addUrl='/autonomos/new'>
       <Table<Autonomo>
-        rowKey="id"
         bordered
-        dataSource={autonomos.items}
-        locale={{
-          emptyText: <Empty description="Nenhum autônomo cadastrado" />
-        }}
+        dataSource={data?.items}
+        loading={isLoading}
+        locale={{ emptyText: <Empty description="Nenhum autônomo cadastrado" /> }}
         onChange={handleChange}
+        rowKey="id"
         sortDirections={['ascend', 'descend']}
         pagination={{
           position: ['bottomCenter'],
-          // current: pageParams.page,
-          // pageSize: pageParams.size
+          current: pageParams.page,
+          pageSize: pageParams.size
         }}
       >
         <Column<Autonomo>
           sorter
           title="Nome"
           dataIndex="nome"
-          render={(text, item) => (
-            <Link to={`/autonomos/${item.id}`}>{text}</Link>
-          )}
+          render={(text, item) => <Link to={`/autonomos/${item.id}`}>{text}</Link>}
         />
         <Column<Autonomo>
           sorter
@@ -94,28 +105,26 @@ export const Autonomos = () => {
           className="table-actions-column"
           width="200px"
           align="center"
-          render={(_, item) => {
-            return (
-              <Space direction="horizontal">
-                <Popconfirm
-                  placement="left"
-                  title={
-                    <Typography.Text>
-                      Confirma a exclusão de{' '}
-                      <Typography.Text strong>{item.nome}</Typography.Text>?
-                    </Typography.Text>
-                  }
-                  onConfirm={() => handleRemoveAutonomo(item.id!!)}
-                  okText="Sim"
-                  cancelText="Não"
-                >
-                  <Button danger icon={<DeleteOutlined />}>
-                    Excluir
-                  </Button>
-                </Popconfirm>
-              </Space>
-            );
-          }}
+          render={(_, item) => (
+            <Space direction="horizontal">
+              <Popconfirm
+                placement="left"
+                title={
+                  <Typography.Text>
+                    Confirma a exclusão de{' '}
+                    <Typography.Text strong>{item.nome}</Typography.Text>?
+                  </Typography.Text>
+                }
+                onConfirm={() => handleRemoveAutonomo(item.id!!)}
+                okText="Sim"
+                cancelText="Não"
+              >
+                <Button danger icon={<DeleteOutlined />}>
+                  Excluir
+                </Button>
+              </Popconfirm>
+            </Space>
+          )}
         />
       </Table>
     </CdsLayout>

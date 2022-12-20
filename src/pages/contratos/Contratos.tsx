@@ -15,13 +15,13 @@ import { Link } from 'react-router-dom';
 import { getContratos, removeContrato } from '../../api/contratos.api';
 import { CdsLayout } from '../../components/CdsLayout';
 import { Contrato } from '../../models/contrato';
-import { DEFAULT_PAGE_PARAMS, PageParams } from '../../models/page-params';
-import { DEFAULT_PAGINATION, Pagination } from '../../models/pagination';
+import { DEFAULT_PAGE_PARAMS, PaginationInput } from '../../models/page-params';
+import { DEFAULT_PAGINATION, PaginationOutput } from '../../models/pagination';
 import { maskCurrency } from '../../utils/masks';
 
 export const Contratos = () => {
-  const [contratos, setContratos] = useState<Pagination<Contrato>>(DEFAULT_PAGINATION);
-  const [pageParams, setPageParams] = useState<PageParams<Contrato>>({
+  const [contratos, setContratos] = useState<PaginationOutput<Contrato>>(DEFAULT_PAGINATION);
+  const [pageParams, setPageParams] = useState<PaginationInput<Contrato>>({
     ...DEFAULT_PAGE_PARAMS,
     sort: 'vigenciaInicio'
   });

@@ -1,7 +1,7 @@
 import { Cargo, CARGO_DEFAULT_VALUE, UnsavedCargo } from '../models/cargo';
 import {
   getPaginationRange as getPageRange,
-  PageParams
+  PaginationInput
 } from '../models/page-params';
 import { supabase } from '../utils/supabase';
 
@@ -12,7 +12,7 @@ export async function getCargos({
   size,
   ascending,
   sort = 'nome'
-}: PageParams<Cargo>) {
+}: PaginationInput<Cargo>) {
   const { from, to } = getPageRange(page, size);
   return supabase
     .from(TABLE_NAME)
