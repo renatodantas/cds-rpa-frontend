@@ -3,12 +3,12 @@ import {
   Autonomo,
   AUTONOMO_DEFAULT_VALUE
 } from '../models/autonomo';
-import { getPaginationRange, PaginationInput, PaginationOutput } from '../models/pagination';
+import { PaginationInput, PaginationOutput } from '../models/pagination';
 import { http } from '../utils/http-client';
 
 const API = '/autonomos';
 export const AutonomosQueries = {
-  LIST: 'Autonomos::find',
+  LIST: 'Autonomos::list',
   SELECTED: 'Autonomos::selected',
   CREATE: 'Autonomos::create',
   UPDATE: 'Autonomos::update',
@@ -21,11 +21,10 @@ export function findAutonomos({
   ascending,
   sort = 'nome'
 }: PaginationInput<Autonomo>) {
-  const { from, to } = getPaginationRange(page, size);
-  return useQuery(AutonomosQueries.LIST, () =>
-    http.get<PaginationOutput<Autonomo>>(API)
-      .then(res => res.data)
-  );
+  const consulta = () => http
+    .get<PaginationOutput<Autonomo>>(API, { params: { page, size } })
+    .then(res => res.data);
+  return useQuery([AutonomosQueries.LIST, page], consulta, { keepPreviousData: true });
 }
 
 export function findAutonomoById(id = 'new') {

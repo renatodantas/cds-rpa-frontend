@@ -17,7 +17,7 @@ import { Link } from 'react-router-dom';
 import { AutonomosQueries, deleteAutonomo, findAutonomos } from '../../api/autonomos.api';
 import { CdsLayout } from '../../components/CdsLayout';
 import { Autonomo } from '../../models/autonomo';
-import { DEFAULT_PAGE_PARAMS, PaginationInput } from '../../models/pagination';
+import { DEFAULT_PAGE, DEFAULT_PAGE_PARAMS, PaginationInput } from '../../models/pagination';
 import { maskCpf } from '../../utils/masks';
 
 export const Autonomos = () => {
@@ -29,41 +29,30 @@ export const Autonomos = () => {
   const queryClient = useQueryClient();
   const { mutateAsync: deleteItem } = deleteAutonomo();
 
-  // useEffect(() => {
-  // fetchAutonomos();
-  // }, [pageParams]);
-
-  // const fetchAutonomos = () => {
-  //   findAutonomos(pageParams)
-  //     .then(res =>
-  //       setAutonomos({
-  //         items: res.items || DEFAULT_PAGINATION.items,
-  //         total: res.total || DEFAULT_PAGINATION.total
-  //       })
-  //     )
-  //     .catch(err => {
-  //       message.error(err.message);
-  //     });
-  // };
-
+  // FIXME: verificar porque código sempre faz fetch quando pagina
   const { data, isLoading, isError, error } = findAutonomos(pageParams);
 
   if (isError) {
     message.error(`Erro ao consultar autônomos: ${error}`);
   }
 
-  const handleChange: TableProps<Autonomo>['onChange'] = (_, __, sorter) => {
+  const handleChange: TableProps<Autonomo>['onChange'] = (pagination, __, sorter) => {
     const { field, order } = sorter as SorterResult<Autonomo>;
     const sort = field as keyof Autonomo;
     const ascending = order === 'ascend';
-    setPageParams({ ...pageParams, sort, ascending });
+    setPageParams(params => ({
+      ...params,
+      page: pagination.current || DEFAULT_PAGE,
+      sort,
+      ascending
+    }));
   };
 
   const handleRemoveAutonomo = (id: number) => {
     deleteItem(id, {
       onSuccess: () => {
         message.info('Autônomo excluído com sucesso');
-        queryClient.invalidateQueries([AutonomosQueries.LIST]);
+        queryClient.invalidateQueries(AutonomosQueries.LIST);
       },
       onError: error => {
         message.error(`Erro ao excluir autônomo: ${error}`);
@@ -80,12 +69,13 @@ export const Autonomos = () => {
         locale={{ emptyText: <Empty description="Nenhum autônomo cadastrado" /> }}
         onChange={handleChange}
         rowKey="id"
-        sortDirections={['ascend', 'descend']}
         pagination={{
           position: ['bottomCenter'],
           current: pageParams.page,
-          pageSize: pageParams.size
+          total: data?.total
         }}
+        size='small'
+        sortDirections={['ascend', 'descend']}
       >
         <Column<Autonomo>
           sorter
