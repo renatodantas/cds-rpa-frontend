@@ -5,7 +5,6 @@ import type { ValidateMessages } from 'rc-field-form/lib/interface';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import { ReactQueryDevtools } from 'react-query/devtools';
 import { RouterProvider } from 'react-router-dom';
 import './global.css';
 import { router } from './router';
@@ -31,7 +30,6 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <ConfigProvider locale={ptBR} form={{ validateMessages }}>
       <QueryClientProvider client={client}>
         <RouterProvider router={router} />
-        <ReactQueryDevtools />
       </QueryClientProvider>
     </ConfigProvider>
   </React.StrictMode>
