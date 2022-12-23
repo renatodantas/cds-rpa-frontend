@@ -39,12 +39,12 @@ export const Autonomos = () => {
   const handleChange: TableProps<Autonomo>['onChange'] = (pagination, __, sorter) => {
     const { field, order } = sorter as SorterResult<Autonomo>;
     const sort = field as keyof Autonomo;
-    const ascending = order === 'ascend';
+    console.log('sort: ', sort);
     setPageParams(params => ({
       ...params,
       page: pagination.current || DEFAULT_PAGE,
       sort,
-      ascending
+      order: order === 'ascend' ? 'asc' : 'desc'
     }));
   };
 

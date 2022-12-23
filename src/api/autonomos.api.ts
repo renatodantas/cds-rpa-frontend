@@ -18,13 +18,13 @@ export const AutonomosQueries = {
 export function findAutonomos({
   page,
   size,
-  ascending,
-  sort = 'nome'
+  sort = 'nome',
+  order = 'asc',
 }: PaginationInput<Autonomo>) {
   const consulta = () => http
-    .get<PaginationOutput<Autonomo>>(API, { params: { page, size } })
+    .get<PaginationOutput<Autonomo>>(API, { params: { page, size, sort, order } })
     .then(res => res.data);
-  return useQuery([AutonomosQueries.LIST, page], consulta, { keepPreviousData: true });
+  return useQuery([AutonomosQueries.LIST, page, sort, order], consulta, { keepPreviousData: true });
 }
 
 export function findAutonomoById(id = 'new') {
