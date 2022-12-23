@@ -5,7 +5,9 @@ import {
   UserOutlined
 } from '@ant-design/icons';
 import { FC } from 'react';
-import { Container, SidebarMenuItem } from './style';
+import { blue } from '@ant-design/colors';
+import { Link } from 'react-router-dom';
+import styled from 'styled-components';
 
 type LinkProps = { label: string, to: string; icon: FC; };
 const links: LinkProps[] = [
@@ -27,3 +29,24 @@ export const Sidebar = () => {
     </Container>
   );
 };
+
+const Container = styled.aside`
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  padding: 1.5rem;
+  border-right: 1px solid rgba(0,0,0,0.1);
+`;
+
+const SidebarMenuItem = styled(Link)`
+  font-size: 0.9rem;
+  color: #666;
+  text-decoration: none;
+  &:hover {
+    color: ${blue.primary};
+  }
+  span {
+    margin-right: 15px;
+  }
+`;

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import logo from '../../assets/rpa-logo.png';
-import { Container, LinksContainer, Logo } from './style';
+import styled from 'styled-components';
+import logo from '../assets/rpa-logo.png';
 
 export const Navbar = (): JSX.Element => {
   return (
@@ -24,3 +24,24 @@ export const Navbar = (): JSX.Element => {
     </Container>
   );
 };
+
+const Container = styled.nav`
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  padding: 5px 40px;
+`;
+
+const LinksContainer = styled.div`
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  gap: 20px;
+  & > a {
+    text-decoration: none;
+  }
+`;
+
+const Logo = styled.img`
+  width: 50px;
+`;
